@@ -1,0 +1,92 @@
+#
+# generated on 2016/01/28 06:10:08
+#
+# --table-start--
+dataClass=ru.pva33.whereparking.db.ParkingPoint
+tableName=parkingpoint
+# --table-fields-start--
+# --field-start--
+fieldName=name
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=latitude
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=longitude
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=_id
+canBeNull=false
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=sides
+foreignCollection=true
+foreignCollectionEager=true
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=ru.pva33.whereparking.db.ParkingSide
+tableName=parkingside
+# --table-fields-start--
+# --field-start--
+fieldName=_id
+canBeNull=false
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=parkingPoint
+canBeNull=false
+foreign=true
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=name
+canBeNull=false
+# --field-end--
+# --field-start--
+fieldName=restrictions
+foreignCollection=true
+foreignCollectionEager=true
+# --field-end--
+# --field-start--
+fieldName=allowText
+# --field-end--
+# --field-start--
+fieldName=allowSoundPath
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
+# --table-start--
+dataClass=ru.pva33.whereparking.db.ParkingRestriction
+tableName=parkingrestriction
+# --table-fields-start--
+# --field-start--
+fieldName=_id
+canBeNull=false
+generatedId=true
+# --field-end--
+# --field-start--
+fieldName=parkingSide
+canBeNull=false
+foreign=true
+foreignAutoRefresh=true
+# --field-end--
+# --field-start--
+fieldName=dayOfWeek
+# --field-end--
+# --field-start--
+fieldName=hourFrom
+# --field-end--
+# --field-start--
+fieldName=hourTo
+# --field-end--
+# --table-fields-end--
+# --table-end--
+#################################
