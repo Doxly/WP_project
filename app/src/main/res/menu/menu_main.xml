@@ -3,16 +3,30 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="ru.pva33.whereparking.MainActivity">
     <item
+        android:id="@+id/action_pp_list"
+        android:orderInCategory="95"
+        android:title="@string/pp_list_show"
+        />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_choose"
+        android:orderInCategory="90"
         android:title="@string/action_choose_title"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_record_sound"
-        android:title="Sound recorder"
+        android:icon="@drawable/abc_ic_voice_search_api_mtrl_alpha"
+        android:orderInCategory="110"
+        android:title="@string/action_sound_recorder"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_exit"
+        android:icon="@drawable/abc_ic_clear_mtrl_alpha"
+        android:orderInCategory="120"
+        android:title="@string/action_exit"
         app:showAsAction="never"/>
 </menu>

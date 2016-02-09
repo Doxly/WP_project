@@ -10,6 +10,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import ru.pva33.whereparking.R;
 
@@ -76,11 +77,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
             ParkingRestriction pr;
             int hourFrom = 0, hourTo = 6;
-            for (int day = 1; day <= 3; day++) {
+            for (int day = Calendar.MONDAY; day <= Calendar.WEDNESDAY; day++) {
                 pr = new ParkingRestriction(ps1, day, hourFrom, hourTo);
                 getParkingRestrictionDao().createIfNotExists(pr);
             }
-            for (int day = 4; day <= 6; day++) {
+            for (int day = Calendar.THURSDAY; day <= Calendar.SATURDAY; day++) {
                 pr = new ParkingRestriction(ps2, day, hourFrom, hourTo);
                 getParkingRestrictionDao().createIfNotExists(pr);
             }

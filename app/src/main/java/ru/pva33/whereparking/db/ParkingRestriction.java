@@ -49,7 +49,7 @@ public class ParkingRestriction implements Serializable {
      * @return
      */
     public boolean isActive(Calendar calendar) {
-        int hour = calendar.get(calendar.HOUR);
+        int hour = calendar.get(calendar.HOUR_OF_DAY);
         boolean result = calendar.get(calendar.DAY_OF_WEEK) == this.dayOfWeek
                 && this.hourFrom <= hour
                 && hour < this.hourTo;
@@ -69,7 +69,7 @@ public class ParkingRestriction implements Serializable {
             return result;
         }
         int current_day_of_week = calendar.get(calendar.DAY_OF_WEEK);
-        int current_hour = calendar.get(calendar.HOUR);
+        int current_hour = calendar.get(calendar.HOUR_OF_DAY);
         int delta = this.dayOfWeek - current_day_of_week;
         delta = delta < 0 ? delta + 7 : delta;
         result = delta * 24 + (this.hourFrom - current_hour);

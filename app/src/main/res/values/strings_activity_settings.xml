@@ -17,6 +17,10 @@
         <item>7</item>
     </string-array>
 
+
+    <string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>
+    <string name="pref_title_with_sound">Звуковое оповещение</string>
+
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 

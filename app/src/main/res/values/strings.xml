@@ -1,11 +1,25 @@
 <resources>
     <string name="app_name">Where parking</string>
-    <string name="Lable1">Settings</string>
-    <string name="title_activity_main">Where parking</string>
+    <string name="Lable1">Настройки</string>
+    <string name="title_activity_main">Где запарковаться</string>
 
     <string name="hello_world">Where parking</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Настройки</string>
     <string name="action_exit">Остановить</string>
     <string name="action_choose_title">Выбрать сторону</string>
-    <string name="title_activity_sound_recorder">Запись звука</string>
+    <string name="action_sound_recorder">Запись звука</string>
+    <string name="title_activity_parking_point_list">Мои места парковки</string>
+    <string name="pp_list_show">Места парковки</string>
+    <string name="action_add">Добавить</string>
+    <string name="title_activity_ppdetail">Место парковки</string>
+    <string name="coordinatsLable">Координаты</string>
+    <string name="altutude">Широта</string>
+    <string name="longitude">Долгота</string>
+    <string name="PPDetailSides">Стороны парковки</string>
+    <string name="pref_fire_distance">Дистанция срабатывания</string>
+    <string name="pref_fire_distance_description">Дистанция в км, при приближении ближе которой к точке парковки сработает определение стороны.</string>
+    <string name="ppNameLable">Название</string>
+
+    <!--<string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>-->
+    <!--<string name="pref_title_with_sound">Звуковое оповещение</string>-->
 </resources>

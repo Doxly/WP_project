@@ -2,18 +2,23 @@ package ru.pva33.whereparking;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationManager;
+import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -27,6 +32,15 @@ public class MainActivity extends ActionBarActivity {
     private static final String TAG = "PVA_DEBUG";
 
     DatabaseHelper databaseHelper;
+    private boolean withSound;
+
+    public boolean isWithSound() {
+        // each time when requered we refresh value from settings
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        withSound = prefs.getBoolean("with_sound", false);
+        Log.d(TAG, "With_sound=" + withSound);
+        return withSound;
+    }
 
     public DatabaseHelper getDatabaseHelper() {
         if (databaseHelper == null) {
@@ -42,14 +56,16 @@ public class MainActivity extends ActionBarActivity {
 
         Log.e("Location_service=", Context.LOCATION_SERVICE);
 
-        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Location location = lm.getLastKnownLocation("0");
+//        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//        Location location = lm.getLastKnownLocation("0");
 //        Toast.makeText(getApplicationContext(), "some text", Toast.LENGTH_LONG).show();
 
         showSide();
 
         /*Start service if it is not starting yet*/
-        startService(new Intent(PvaParkingService.class.getName()));
+        Intent serviceIntent = new Intent(PvaParkingService.class.getName());
+        serviceIntent.putExtra("fileName", this.getSoundFileName(1, 1));
+        startService(serviceIntent);
     }
 
     @Override
@@ -67,21 +83,66 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+    /*    if (id == R.id.action_settings) {
             showSettings();
 //            return true;
         } else if (id == R.id.action_choose) {
             showSide();
         } else if (id == R.id.action_record_sound) {
             showRecorder();
+        }*/
+
+        switch (id) {
+            case R.id.action_settings:
+                showSettings();
+                break;
+            case R.id.action_choose:
+                showSide();
+                break;
+            case R.id.action_record_sound:
+                showRecorder();
+                break;
+            case R.id.action_exit:
+                exit();
+                break;
+            case R.id.action_pp_list:
+                showParkingPoints();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    public void click(View view) {
+        Log.d(TAG, "Test internal storage. ");
+        Log.d(TAG, getFilesDir().getAbsolutePath());
+        Log.d(TAG, "test extermal storage.");
+        Log.d(TAG, getExternalFilesDir(null).getAbsolutePath());
+        String fileName = "pvatestfile.txt";
+        String string = "test string";
+        FileOutputStream fos = null;
+        try {
+            fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+            fos.write(string.getBytes());
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
+        }
+    }
     private void showRecorder() {
+        String path = getSoundFileName(1, 1);
         Intent intent = new Intent(MainActivity.this, SoundRecorderActivity.class);
+        intent.putExtra("fileName", path);
         startActivity(intent);
+    }
+
+    public String getSoundFileName(int parkingPointId, int parkingSideId) {
+        String path = getExternalFilesDir(null).getAbsolutePath();
+        path += "/" + parkingPointId + "_" + parkingSideId + ".3gp";
+        return path;
     }
 
     private void showSide() {
@@ -92,13 +153,36 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
             TextView sideText = (TextView) findViewById(R.id.textViewParkingSide);
             sideText.setText(text);
+            if (isWithSound()) {
+                String path = getSoundFileName(1, 1);
+                playSound(path);
+            }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void playSound(String mFileName) {
+        MediaPlayer mp = new MediaPlayer();
+        try {
+            mp.setDataSource(mFileName);
+            mp.prepare();
+            mp.start();
+
+//            mp.release();
+//            mp = null;
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private void showSettings() {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void showParkingPoints() {
+        Intent intent = new Intent(MainActivity.this, ParkingPointListActivity.class);
         startActivity(intent);
     }
 

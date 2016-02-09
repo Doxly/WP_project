@@ -25,21 +25,25 @@ public class ParkingPoint implements Serializable {
     double latitude;      // south/nord
     @DatabaseField(canBeNull = false)
     double longitude;     // east/west
+    @DatabaseField
+    String soundPath;
     @DatabaseField(generatedId = true, canBeNull = false)
     private Long _id;
     // eager true means that all sides would recieved with this object record
     @ForeignCollectionField(eager = true)
     private Collection<ParkingSide> sides;
-
     public ParkingPoint() {
     }
-
 
     public ParkingPoint(String name, double latitude, double longitude) {
         super();
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public String getSoundPath() {
+        return soundPath;
     }
 
     public Collection<ParkingSide> getSides() {

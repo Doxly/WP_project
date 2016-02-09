@@ -2,7 +2,6 @@ package ru.pva33.whereparking;
 
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -70,8 +69,11 @@ public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivit
         recordButton = (ImageButton) findViewById(R.id.recofdButton);
         recordButton.setOnClickListener(clicker);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/pvatest.3gp";
+//        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
+//        mFileName += "/pvatest.3gp";
+
+//        mFileName = savedInstanceState.getString("fileName");
+        mFileName = getIntent().getStringExtra("fileName");
     }
 
     @Override

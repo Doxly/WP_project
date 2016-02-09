@@ -14,7 +14,8 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_activity_sound_recorder"/>
+        android:text="@string/action_sound_recorder"
+        />
 
     <ImageButton
         android:id="@+id/recofdButton"
