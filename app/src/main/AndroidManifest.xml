@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="ru.pva33.whereparking"
+<manifest package="ru.pva33.whereparking"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="1"
-    android:versionName="1">
+          android:versionName="1">
 
+    <permission android:name="ru.pva33.whereparking.permission.MAPS_RECEIVE"
+                android:protectionLevel="signature"
+        />
     <!-- Enable gps and network geolocation -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="ru.pva33.whereparking.permission.MAPS_RECEIVE"
+        />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -55,7 +61,7 @@
             android:label="@string/action_sound_recorder">
         </activity>
         <activity
-            android:name=".ParkingPointListActivity"
+            android:name=".PPListActivity"
             android:label="@string/title_activity_parking_point_list"
             android:parentActivityName=".MainActivity">
             <meta-data
@@ -65,11 +71,28 @@
         <activity
             android:name=".PPDetailActivity"
             android:label="@string/title_activity_ppdetail"
-            android:parentActivityName=".ParkingPointListActivity">
+            android:parentActivityName=".PPListActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.pva33.whereparking.ParkingPointListActivity"/>
+                android:value=".PPListActivity"/>
         </activity>
+        <activity
+            android:name=".PPEditActivity"
+            android:label="@string/title_activity_ppedit">
+        </activity>
+        <activity
+            android:name=".MapActivity"
+            android:label="@string/title_activity_map">
+        </activity>
+
+        <!--<meta-data-->
+        <!--android:name="com.google.android.geo.API_KEY"-->
+        <!--android:value="AIzaSyDQHAobuaEWaIHDz8ljlpCzsSV6ODQk0fU"/>-->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyDQHAobuaEWaIHDz8ljlpCzsSV6ODQk0fU"/>
+
     </application>
+
 
 </manifest>

@@ -4,8 +4,10 @@
       tools:context="ru.pva33.whereparking.MainActivity">
     <item
         android:id="@+id/action_pp_list"
+        android:icon="@drawable/parking"
         android:orderInCategory="95"
         android:title="@string/pp_list_show"
+        app:showAsAction="always"
         />
     <item
         android:id="@+id/action_settings"

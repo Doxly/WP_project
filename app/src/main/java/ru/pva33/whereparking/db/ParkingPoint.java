@@ -2,6 +2,7 @@ package ru.pva33.whereparking.db;
 
 //import com.j256.orm
 
+import com.google.android.gms.maps.model.LatLng;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -18,7 +19,7 @@ import java.util.Iterator;
  * Created by pva on 28.01.16.
  */
 @DatabaseTable
-public class ParkingPoint implements Serializable {
+public class ParkingPoint implements Serializable, SoundKeeper {
     @DatabaseField(canBeNull = false)
     String name;
     @DatabaseField(canBeNull = false)
@@ -29,12 +30,11 @@ public class ParkingPoint implements Serializable {
     String soundPath;
     @DatabaseField(generatedId = true, canBeNull = false)
     private Long _id;
-    // eager true means that all sides would recieved with this object record
+    // eager true means that all sides would recieved with this object record_enable
     @ForeignCollectionField(eager = true)
     private Collection<ParkingSide> sides;
     public ParkingPoint() {
     }
-
     public ParkingPoint(String name, double latitude, double longitude) {
         super();
         this.name = name;
@@ -44,6 +44,10 @@ public class ParkingPoint implements Serializable {
 
     public String getSoundPath() {
         return soundPath;
+    }
+
+    public void setSoundPath(String soundPath) {
+        this.soundPath = soundPath;
     }
 
     public Collection<ParkingSide> getSides() {
@@ -61,12 +65,24 @@ public class ParkingPoint implements Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public double getLatitude() {
         return latitude;
     }
 
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
     public double getLongitude() {
         return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public ParkingSide chooseParkingSide(Calendar calendar) {
@@ -87,4 +103,25 @@ public class ParkingPoint implements Serializable {
         return ps;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + " [id=" + _id + ", name=" + name + ", soundPath=" + soundPath + ", longitude=" + longitude + ", laltitude=" + latitude + "]";
+    }
+
+    public String getSidesText() {
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<ParkingSide> i = getSides().iterator(); i.hasNext(); ) {
+            sb.append(i.next().getName()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    public LatLng getPosition() {
+        return new LatLng(getLatitude(), getLongitude());
+    }
+
+    public void setPosition(LatLng latLng) {
+        setLatitude(latLng.latitude);
+        setLongitude(latLng.longitude);
+    }
 }

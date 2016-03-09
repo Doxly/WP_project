@@ -15,9 +15,12 @@ import java.util.List;
 import ru.pva33.whereparking.db.ParkingSide;
 
 /**
+ * Adapter for {@link ParkingSide}. Provide content for views.
+ * Contain list of {@link ParkingSide} and support list manipulations.
+ *
  * Created by pva on 04.02.16.
  */
-public class PSArrayAdapter extends ArrayAdapter<String> {
+public class PSArrayAdapter extends ArrayAdapter<ParkingSide> {
     private LayoutInflater inflater;
     private List records;
     private Dao<ParkingSide, Integer> parkingSideDao;
@@ -42,7 +45,7 @@ public class PSArrayAdapter extends ArrayAdapter<String> {
         ImageButton sb = ((ImageButton) convertView.findViewById(R.id.ppListItemSoundButton));
         // if we don't do this in code element of list wouldn't fired click events
         sb.setFocusable(false);
-        int imageId = ps.getAllowSoundPath() == null ? R.drawable.ic_lock_silent_mode : R.drawable.ic_lock_silent_mode_off;
+        int imageId = ps.getSoundPath() == null ? R.drawable.ic_lock_silent_mode : R.drawable.ic_lock_silent_mode_off;
         sb.setBackgroundResource(imageId);
 
         return convertView;

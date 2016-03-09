@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="wrap_content" android:layout_height="match_parent"
+              android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/button_add"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_input_add"
+        android:nestedScrollingEnabled="true"
+        android:onClick="recordPanelClick"
+        android:tag="add"/>
+
+    <Button
+        android:id="@+id/button_edit"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_edit"
+        android:onClick="recordPanelClick"
+        android:tag="edit"/>
+
+    <Button
+        android:id="@+id/button_delete"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_close_clear_cancel"
+        android:onClick="recordPanelClick"
+        android:tag="delete"/>
+</LinearLayout>

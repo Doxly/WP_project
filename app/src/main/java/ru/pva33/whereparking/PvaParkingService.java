@@ -7,14 +7,24 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.media.MediaPlayer;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,35 +32,42 @@ import java.util.TimerTask;
 import ru.pva33.whereparking.db.DatabaseHelper;
 import ru.pva33.whereparking.db.ParkingPoint;
 
-public class PvaParkingService extends Service {
+/**
+ * Class work as background service.
+ * It periodically catch current geolocation to perform check wheither we approach to
+ * one of our parking point. when distance to parking poing becames small, service choose
+ * parking side from these parking point and play sound for that side.
+ * Service create notification with active item to stop service.
+ */
+public class PvaParkingService extends Service
+    implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+    LocationListener {
     // IntentService handle all intent in que and terminate itself.
-//public class PvaParkingService extends IntentService {
 
     public static final String CLOSE_ACTION = "close";
     private static final String TAG = "PVA_DEBUG";
+    private static final long TIMER_DELAY = 1000L;
+    private static final long TIMER_PERIOD = 60 * 1000L;
     //    Some code for notification icon
     private static final int NOTIFICATION = 1;
     private final NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(
         this
     );
     private Timer timer;
-    private ActivateLocation aloc;
-
+    private GoogleApiClient googlcApiClient;
     private Location location;
-    private String locationMethod;
+    //    private String locationMethod;
     // distance when closer - fire side choosing
     private int fireDistance;
     // Cach of ParkingPoints with there coordinates
     private List<ParkingPoint> parkingPoints;
-    private String soundFileName;
+    //    private String soundFileName;
     private DatabaseHelper databaseHelper;
     private TimerTask updateTask = new TimerTask() {
         @Override
         public void run() {
             Log.d(TAG, "Timer task doing work");
-            if (aloc != null) {
-                location = aloc.getLocation();
-            }
+            location = LocationServices.FusedLocationApi.getLastLocation(googlcApiClient);
 
             if (location != null) {
                 Log.d(TAG, location.toString());
@@ -74,53 +91,43 @@ public class PvaParkingService extends Service {
         return databaseHelper;
     }
 
+    /**
+     * Service is called via startService.
+     *
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-//        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//        location = lm.getLastKnownLocation("0");
-//        if (location != null)
-//            Log.d(TAG, location.toString());
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        locationMethod = prefs.getString("location_method", "7");
-        int locationProvider = Integer.valueOf(locationMethod);
+//        locationMethod = prefs.getString("location_method", "7");
+//        int locationProvider = Integer.valueOf(locationMethod);
         fireDistance = Integer.valueOf(prefs.getString("fire_distance", "2"));
-        Log.d(TAG, "location method from prefs=" + locationProvider);
+//        Log.d(TAG, "location method from prefs=" + locationProvider);
         parkingPoints = new ArrayList<>();
-        // fill parking points
-//        Log.d(TAG, "location method from prefs="+locationMethod);
-//        if (locationMethod.equals("1")){
-//            locationProvider = ActivateLocation.GPS;
-//        }else if (locationMethod.equals("2")){
-//            locationProvider = ActivateLocation.NETWORK;
-//        }
-        aloc = new ActivateLocation(locationProvider, this);
-//        aloc = new ActivateLocation(ActivateLocation.GPS, this);
-        location = aloc.getLocation();
 
+//        soundFileName = intent.getStringExtra("fileName");
+//        Log.d(TAG, "onStartCommand soundFileName: " + soundFileName);
+
+
+        // For location over googleAPIClient
+        googlcApiClient = new GoogleApiClient.Builder(this).
+            addConnectionCallbacks(this).
+            addOnConnectionFailedListener(this).
+            addApi(LocationServices.API).
+            build();
+        googlcApiClient.connect();
         return super.onStartCommand(intent, flags, startId);
     }
 
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-        soundFileName = intent.getStringExtra("fileName");
-        Log.d(TAG, "onStart:name from intent=" + soundFileName);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-//        throw new UnsupportedOperationException("Not yet implemented");
-        soundFileName = intent.getStringExtra("fileName");
-        Log.d(TAG, "onBind:name from intent=" + soundFileName);
-        return null;
-    }
 
     //    @Override
     protected void onHandleIntent(Intent intent) {
         //Here we can get some data passed from outside
-        soundFileName = intent.getStringExtra("fileName");
-        Log.d(TAG, "onHandleIntent: " + soundFileName);
+//        soundFileName = intent.getStringExtra("fileName");
+//        Log.d(TAG, "onHandleIntent: " + soundFileName);
     }
 
     @Override
@@ -128,8 +135,8 @@ public class PvaParkingService extends Service {
         super.onCreate();
         Log.d(TAG, "Service creating");
 
-        timer = new Timer("PvaWhereParkingTimer");
-        timer.schedule(updateTask, 1000L, 60 * 1000L);
+//        timer = new Timer("PvaWhereParkingTimer");
+//        timer.schedule(updateTask, TIMER_DELAY, TIMER_PERIOD);
 //        for notification icon
         setupNotifications();
         showNotification();
@@ -141,16 +148,26 @@ public class PvaParkingService extends Service {
         super.onDestroy();
         Log.d(TAG, "Service destroying");
 
-        timer.cancel();
-        timer = null;
+//        timer.cancel();
+//        timer = null;
 
-        aloc.unregisterLocationListener();
-        aloc = null;
+//        aloc.unregisterLocationListener();
+//        aloc = null;
         if (mNotificationManager != null) {
             mNotificationManager.cancel(NOTIFICATION);
         }
+        LocationServices.FusedLocationApi.removeLocationUpdates(googlcApiClient, this);
+        googlcApiClient.disconnect();
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    /**
+     * Create notifications for service
+     */
     private void setupNotifications() { // called in onCreate()
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager) this.getSystemService(
@@ -214,4 +231,51 @@ public class PvaParkingService extends Service {
 //        }
     }
 
+    /**
+     * Fired when connected to google location service
+     *
+     * @param bundle
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+        this.location = LocationServices.FusedLocationApi.getLastLocation(googlcApiClient);
+        // in order to get location periodically
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(TIMER_PERIOD);
+        locationRequest.setFastestInterval(TIMER_PERIOD);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        Collection<LocationRequest> requests = new ArrayList<>();
+        requests.add(locationRequest);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addAllLocationRequests(requests);
+
+        PendingResult<LocationSettingsResult> result =
+            LocationServices.SettingsApi.checkLocationSettings(googlcApiClient, builder.build());
+
+
+        startLocationUpdates(locationRequest);
+    }
+
+    private void startLocationUpdates(LocationRequest locationRequest) {
+        LocationServices.FusedLocationApi.requestLocationUpdates(googlcApiClient, locationRequest,
+            this
+        );
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+        Log.d(TAG, "onLocationChanged fired. new location=" + location);
+    }
 }

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 
 /**
+ * Suppose start service on device boot process.
+ * It is registered in AndroidManifest.xml
  * Created by pva on 21.01.16.
  */
 public class OnBootReceiver extends BroadcastReceiver {

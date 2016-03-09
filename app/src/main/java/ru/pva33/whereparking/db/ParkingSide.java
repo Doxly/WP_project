@@ -16,7 +16,7 @@ import java.util.Iterator;
  */
 
 @DatabaseTable
-public class ParkingSide implements Serializable {
+public class ParkingSide implements Serializable, SoundKeeper {
 
     private static final String TAG = "PVA_DEBUG";
     @DatabaseField
@@ -61,11 +61,20 @@ public class ParkingSide implements Serializable {
         this.allowText = allowText;
     }
 
-    public String getAllowSoundPath() {
+    public ParkingPoint getParkingPoint() {
+        return parkingPoint;
+    }
+
+    public Long get_id() {
+
+        return _id;
+    }
+
+    public String getSoundPath() {
         return allowSoundPath;
     }
 
-    public void setAllowSoundPath(String allowSoundPath) {
+    public void setSoundPath(String allowSoundPath) {
         this.allowSoundPath = allowSoundPath;
     }
 

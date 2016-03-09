@@ -23,8 +23,9 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testParkingRestrictionIsActive() {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-        int hour = now.get(Calendar.HOUR);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
         ParkingRestriction pr = new ParkingRestriction(null, dayOfWeek, hour, hour + 1);
+        Log.d(TAG, "is active test pr=" + pr);
         assertTrue(pr.isActive(now));
         pr = new ParkingRestriction(null, dayOfWeek, hour + 1, hour + 2);
         assertFalse(pr.isActive(now));
@@ -35,7 +36,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testParkingRestrictionGetHoursBefore() {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-        int hour = now.get(Calendar.HOUR);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
 
         ParkingRestriction pr = new ParkingRestriction(null, dayOfWeek, hour, hour + 1);
         assertEquals(0, pr.getHoursBefore(now));
@@ -56,7 +57,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testParkingSideIsRestricted() {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-        int hour = now.get(Calendar.HOUR);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
 
         ParkingSide ps = new ParkingSide(null, "test parking side");
         ParkingRestriction pr = new ParkingRestriction(null, dayOfWeek - 1, hour, hour + 1);
@@ -83,7 +84,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testParkingSideGetHoursBefore() {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-        int hour = now.get(Calendar.HOUR);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
 
         Log.d(TAG, "DayOfWeek=" + dayOfWeek + " hour=" + hour);
 
@@ -102,7 +103,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testParkingPointChooseParkingSide() {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-        int hour = now.get(Calendar.HOUR);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
 
         ParkingPoint pp = new ParkingPoint("test parking point", 0, 0);
         // single side
@@ -127,6 +128,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         ps.getRestrictions().add(new ParkingRestriction(ps, dayOfWeek + 1, hour, hour + 1));
         result = pp.chooseParkingSide(now);
         assertNotNull(result);
+        Log.d(TAG, "testParkingPointChooseParkingSide. side=" + result.getName());
         assertEquals(ps, result);
 
     }

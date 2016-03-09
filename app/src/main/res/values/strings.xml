@@ -3,7 +3,7 @@
     <string name="Lable1">Настройки</string>
     <string name="title_activity_main">Где запарковаться</string>
 
-    <string name="hello_world">Where parking</string>
+    <string name="hello_world">Hellow world</string>
     <string name="action_settings">Настройки</string>
     <string name="action_exit">Остановить</string>
     <string name="action_choose_title">Выбрать сторону</string>
@@ -11,6 +11,8 @@
     <string name="title_activity_parking_point_list">Мои места парковки</string>
     <string name="pp_list_show">Места парковки</string>
     <string name="action_add">Добавить</string>
+    <string name="action_edit">Редактировать</string>
+    <string name="action_delete">Удалить</string>
     <string name="title_activity_ppdetail">Место парковки</string>
     <string name="coordinatsLable">Координаты</string>
     <string name="altutude">Широта</string>
@@ -19,6 +21,19 @@
     <string name="pref_fire_distance">Дистанция срабатывания</string>
     <string name="pref_fire_distance_description">Дистанция в км, при приближении ближе которой к точке парковки сработает определение стороны.</string>
     <string name="ppNameLable">Название</string>
+    <string name="action_add_side">Добавить сторону</string>
+    <string name="title_activity_ppedit">Редактирование места парковки</string>
+    <string name="bSave">Сохранить</string>
+    <string name="title_activity_map">Карта</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
 
     <!--<string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>-->
     <!--<string name="pref_title_with_sound">Звуковое оповещение</string>-->

@@ -1,64 +1,85 @@
 package ru.pva33.whereparking;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+
+import ru.pva33.whereparking.db.SoundKeeper;
 
 
-public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivity {
+//public class SoundRecorderActivity extends AppCompatActivity implements View.OnClickListener {//ActionBarActivity {
+public class SoundRecorderActivity extends Activity implements View.OnClickListener {//ActionBarActivity {
 
     private static final String TAG = "PVA_DEBUG";
+    /* Our sound recorder may be in one of this states: idle, recording, playing
+    * */
 
-    ImageButton recordButton = null;
-    Chronometer chronometer = null;
-    boolean mIsRecording = false;
-
+    private static final int IDLE = 0,
+        RECORDING = 1,
+        PLAYING = 2;
+    ImageButton bRecord, bPlay, bDelete;
+    Chronometer chronometer;
+    TextView tvFileName;
+    SoundKeeper soundKeeper;
     MediaRecorder mRecorder = null;
+    MediaPlayer mPlayer = null;
+    private int state = IDLE;
     private String mFileName;
 
-    View.OnClickListener clicker = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            mIsRecording = !mIsRecording;
-            onRecord(mIsRecording);
-            showRecordStatus(mIsRecording);
-        }
-    };
 
     /**
-     * Save record state before activity would destroyed
+     * Save record_enable state before activity would destroyed
      *
-     * @param outState
+     * @param outState bundle to save some data
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean("isStartRecording", this.mIsRecording);
-        Log.d(TAG, "SaveInstanceState done." + mIsRecording);
+        outState.putInt("state", state);
+//        outState.putBoolean("isStartRecording", this.mIsRecording);
+//        Log.d(TAG, "SaveInstanceState done." + mIsRecording);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            this.mIsRecording = savedInstanceState.getBoolean("isStartRecording");
-            Log.d(TAG, "RestoreInstanceState done." + mIsRecording);
+            this.state = savedInstanceState.getInt("state", IDLE);
+//            this.mIsRecording = savedInstanceState.getBoolean("isStartRecording");
+//            Log.d(TAG, "RestoreInstanceState done." + mIsRecording);
         }
-        showRecordStatus(this.mIsRecording);
+        showState(state);
     }
 
-    private void showRecordStatus(boolean isRecording) {
-        if (isRecording) {
-            recordButton.setBackgroundResource(R.drawable.mic1);
-        } else {
-            recordButton.setBackgroundResource(R.drawable.mic);
+    private void showState(int state) {
+        switch (state) {
+            case RECORDING:
+                bRecord.setBackgroundResource(R.drawable.record);
+                bPlay.setBackgroundResource(R.drawable.play_disable);
+                break;
+            case PLAYING:
+                bRecord.setBackgroundResource(R.drawable.record_disable);
+                bPlay.setBackgroundResource(R.drawable.play);
+                break;
+            case IDLE:
+                bRecord.setBackgroundResource(R.drawable.record_enable);
+                if (ParkingHelper.fileExists(mFileName)) {
+                    bPlay.setBackgroundResource(R.drawable.play_enable);
+                } else {
+                    bPlay.setBackgroundResource(R.drawable.play_disable);
+                }
         }
     }
 
@@ -66,14 +87,23 @@ public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivit
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound_recorder);
-        recordButton = (ImageButton) findViewById(R.id.recofdButton);
-        recordButton.setOnClickListener(clicker);
+        bRecord = (ImageButton) findViewById(R.id.ibRecord);
+        bRecord.setOnClickListener(this);
+        bPlay = (ImageButton) findViewById(R.id.ibPlay);
+        bPlay.setOnClickListener(this);
+        bDelete = (ImageButton) findViewById(R.id.ibDelete);
+        bDelete.setOnClickListener(this);
         chronometer = (Chronometer) findViewById(R.id.chronometer);
+        tvFileName = (TextView) findViewById(R.id.tvFileName);
 //        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
 //        mFileName += "/pvatest.3gp";
 
 //        mFileName = savedInstanceState.getString("fileName");
         mFileName = getIntent().getStringExtra("fileName");
+        soundKeeper = (SoundKeeper) getIntent().getExtras().get("soundKeeper");
+//        soundKeeperDao = (Dao) getIntent().getExtras().get("soundKeeperDao");
+        tvFileName.setText(mFileName);
+        showState(state);
     }
 
     @Override
@@ -98,11 +128,16 @@ public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivit
         return super.onOptionsItemSelected(item);
     }
 
-    private void onRecord(boolean isRecording) {
-        if (isRecording) {
-            startRecording();
-        } else {
-            stopRecording();
+    private void onRecord(int state) {
+        switch (state) {
+            case IDLE:
+                startRecording();
+                switchState(RECORDING);
+                break;
+            case RECORDING:
+                stopRecording();
+                switchState(RECORDING);
+                break;
         }
     }
 
@@ -111,6 +146,17 @@ public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivit
         mRecorder.release();
         mRecorder = null;
         chronometer.stop();
+        if (soundKeeper != null) {
+            soundKeeper.setSoundPath(mFileName);
+//            try {
+//                soundKeeperDao.update(soundKeeper);
+//            } catch (SQLException e) {
+//                String text = "error updating DB with soundPath";
+//                Log.e(TAG, text);
+//                Log.d(TAG, text + e.getMessage());
+//                MainActivity.alert(this, text);
+//            }
+        }
     }
 
     private void startRecording() {
@@ -125,7 +171,93 @@ public class SoundRecorderActivity extends AppCompatActivity {//ActionBarActivit
             Log.e(TAG, e.getMessage());
             e.printStackTrace();
         }
+        Log.e(TAG, "Start recording pressed. file name=" + mFileName);
         mRecorder.start();
         chronometer.start();
     }
+
+    @Override
+    public void onBackPressed() {
+        // when hardware back button pressed - store result
+//        super.onBackPressed();
+        Intent intent = new Intent();
+        if (ParkingHelper.fileExists(mFileName)) {
+            intent.putExtra("fileName", this.mFileName);
+            Log.d(TAG, "write file name=" + mFileName);
+        }
+        intent.putExtra("soundKeeper", (Serializable) this.soundKeeper);
+        setResult(RESULT_OK, intent);
+        Log.d(TAG, "Recorder onBack. setResult done. intent=" + intent);
+        finish();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == bRecord) {
+            onRecord(state);
+//            switchState(RECORDING);
+//            mIsRecording = !mIsRecording;
+        } else if (v == bPlay) {
+            onPlay(state);
+            switchState(PLAYING);
+        } else if (v == bDelete) {
+            removeFile(mFileName);
+        }
+        showState(state);
+    }
+
+    private void removeFile(String mFileName) {
+        File f = new File(mFileName);
+        f.delete();// if file doesn't exists no exception fired
+        soundKeeper.setSoundPath(null);
+    }
+
+    private void onPlay(int state) {
+        switch (state) {
+            case IDLE:
+                startPlay();
+                switchState(PLAYING);
+                break;
+            case PLAYING:
+                stopPlay();
+//                switchState(PLAYING);
+        }
+    }
+
+    private void stopPlay() {
+        if (mPlayer != null) {
+            mPlayer.stop();
+            mPlayer.release();
+            mPlayer = null;
+        }
+        state = IDLE;
+    }
+
+    private void startPlay() {
+        mPlayer = new MediaPlayer();
+        try {
+            mPlayer.setDataSource(mFileName);
+            mPlayer.prepare();
+            mPlayer.start();
+            mPlayer.setOnCompletionListener(
+                new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        switchState(PLAYING);
+                        showState(state);
+                    }
+                }
+            );
+            switchState(PLAYING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void switchState(int targetState) {
+        state = state == targetState ? IDLE : targetState;
+    }
+
+
+
 }

@@ -54,6 +54,7 @@ public class ParkingRestriction implements Serializable {
                 && this.hourFrom <= hour
                 && hour < this.hourTo;
 //        return true;
+//        Log.d("PVA_DEBUG", "is active: calendar="+calendar+" this="+toString());
         return result;
     }
 

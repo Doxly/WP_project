@@ -16,8 +16,6 @@ import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -29,10 +27,14 @@ import ru.pva33.whereparking.db.ParkingSide;
 
 public class MainActivity extends ActionBarActivity {
 
-    private static final String TAG = "PVA_DEBUG";
+    public static final String TAG = "PVA_DEBUG";
 
     DatabaseHelper databaseHelper;
     private boolean withSound;
+
+    public static void alert(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG);
+    }
 
     public boolean isWithSound() {
         // each time when requered we refresh value from settings
@@ -64,7 +66,8 @@ public class MainActivity extends ActionBarActivity {
 
         /*Start service if it is not starting yet*/
         Intent serviceIntent = new Intent(PvaParkingService.class.getName());
-        serviceIntent.putExtra("fileName", this.getSoundFileName(1, 1));
+//        serviceIntent.putExtra("fileName", this.getSoundFileName(1, 1));
+        serviceIntent.putExtra("fileName", ParkingHelper.getSoundFileName(this, 1L, 1L));
         startService(serviceIntent);
     }
 
@@ -114,35 +117,25 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void click(View view) {
-        Log.d(TAG, "Test internal storage. ");
-        Log.d(TAG, getFilesDir().getAbsolutePath());
-        Log.d(TAG, "test extermal storage.");
-        Log.d(TAG, getExternalFilesDir(null).getAbsolutePath());
-        String fileName = "pvatestfile.txt";
-        String string = "test string";
-        FileOutputStream fos = null;
-        try {
-            fos = openFileOutput(fileName, Context.MODE_PRIVATE);
-            fos.write(string.getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    private void showRecorder() {
-        String path = getSoundFileName(1, 1);
-        Intent intent = new Intent(MainActivity.this, SoundRecorderActivity.class);
-        intent.putExtra("fileName", path);
+        Log.d(TAG, "Test button handler. ");
+        // we have some trubles with import android library classes.
+        // I try to set it in libs folder
+        Intent intent = new Intent(this, MapActivity.class);
         startActivity(intent);
     }
 
-    public String getSoundFileName(int parkingPointId, int parkingSideId) {
-        String path = getExternalFilesDir(null).getAbsolutePath();
-        path += "/" + parkingPointId + "_" + parkingSideId + ".3gp";
-        return path;
+//    public String getSoundFileName(int parkingPointId, int parkingSideId) {
+//        String path = getExternalFilesDir(null).getAbsolutePath();
+//        path += "/" + parkingPointId + "_" + parkingSideId + ".3gp";
+//        return path;
+//    }
+
+    private void showRecorder() {
+//        String path = getSoundFileName(1, 0);
+        String path = ParkingHelper.getSoundFileName(this, 1L, 0L);
+        Intent intent = new Intent(MainActivity.this, SoundRecorderActivity.class);
+        intent.putExtra("fileName", path);
+        startActivity(intent);
     }
 
     private void showSide() {
@@ -154,7 +147,7 @@ public class MainActivity extends ActionBarActivity {
             TextView sideText = (TextView) findViewById(R.id.textViewParkingSide);
             sideText.setText(text);
             if (isWithSound()) {
-                String path = getSoundFileName(1, 1);
+                String path = ParkingHelper.getSoundFileName(this, 1L, 1L);
                 playSound(path);
             }
         } catch (SQLException e) {
@@ -182,7 +175,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void showParkingPoints() {
-        Intent intent = new Intent(MainActivity.this, ParkingPointListActivity.class);
+        Intent intent = new Intent(MainActivity.this, PPListActivity.class);
         startActivity(intent);
     }
 
@@ -201,7 +194,8 @@ public class MainActivity extends ActionBarActivity {
 
     private void exit() {
         Intent intent = new Intent(this, PvaParkingService.class).setFlags(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Intent.FLAG_ACTIVITY_CLEAR_TOP
+        );
         stopService(intent);
         Log.d(TAG, "Servece stoped ...");
         finish();

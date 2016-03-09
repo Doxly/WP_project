@@ -1,10 +1,41 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
-      tools:context="ru.pva33.whereparking.PPDetailActivity">
+      tools:context="ru.pva33.whereparking.PPDetailActivity"
+    >
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_add"
+        android:icon="@drawable/ic_input_add"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never"/>
+        android:title="@string/action_add"
+        app:showAsAction="never"
+        />
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@drawable/ic_menu_edit"
+        android:orderInCategory="110"
+        android:title="@string/action_edit"
+        app:showAsAction="ifRoom"
+        />
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_menu_close_clear_cancel"
+        android:orderInCategory="120"
+        android:title="@string/action_delete"
+        app:showAsAction="never"
+        />
+    <group
+        android:menuCategory="container"
+        >
+        <item
+            android:id="@+id/action_add_side"
+            android:icon="@drawable/ic_menu_add"
+
+            android:orderInCategory="130"
+            android:title="@string/action_add_side"
+            app:showAsAction="never"
+            />
+
+    </group>
+
 </menu>

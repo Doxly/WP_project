@@ -2,6 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/background"
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
@@ -28,7 +29,7 @@
         />
 
     <TextView
-        android:id="@+id/PPDetailName"
+        android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/ppDetailTitle"
@@ -57,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/PPDetailName"
+        android:layout_below="@+id/name"
         android:background="#ffffd291"
         android:text="Small Text"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -69,7 +70,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/PPDetailName"
+        android:layout_below="@+id/name"
         android:layout_marginTop="12dp"
         android:text="@string/coordinatsLable"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -87,10 +88,10 @@
         />
 
     <TextView
-        android:id="@+id/PPDetailLongitude"
+        android:id="@+id/longitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/PPDetailName"
+        android:layout_alignLeft="@+id/name"
         android:layout_alignTop="@+id/textView5"
         android:text="@string/longitude"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -102,18 +103,18 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/PPDetailLongitude"
+        android:layout_below="@+id/longitude"
         android:text="@string/altutude"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
 
     <TextView
-        android:id="@+id/PPDetailLaltitude"
+        android:id="@+id/latitude"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/PPDetailLongitude"
-        android:layout_alignStart="@+id/PPDetailLongitude"
-        android:layout_below="@+id/PPDetailLongitude"
+        android:layout_alignLeft="@+id/longitude"
+        android:layout_alignStart="@+id/longitude"
+        android:layout_below="@+id/longitude"
         android:text="@string/altutude"
         android:textAppearance="?android:attr/textAppearanceMedium"
         />
@@ -124,7 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/PPDetailLaltitude"
+        android:layout_below="@+id/latitude"
         android:layout_marginTop="12dp"
         android:text="@string/PPDetailSides"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -133,7 +134,7 @@
     <ListView
         android:id="@+id/PPDetailListViewPPSides"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/textView7"
