@@ -96,6 +96,11 @@ public class ParkingSide implements Serializable, SoundKeeper {
         return result;
     }
 
+    /**
+     * Get minimum time in hours before any restriction becomes active
+     * @param calendar
+     * @return
+     */
     public int getHoursBefore(Calendar calendar) {
         int result = 99999;
         // find restriction with smallest time before

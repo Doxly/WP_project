@@ -96,8 +96,15 @@ public class ParkingPoint implements Serializable, SoundKeeper {
         this.longitude = longitude;
     }
 
+    /**
+     * Select side where there is no active restrictions right now and which have
+     * maximum time before restriction.
+     * @param calendar
+     * @return
+     */
     public ParkingSide chooseParkingSide(Calendar calendar) {
-        // select side where there is no active restrictions and which have maximum time before restriction
+        //
+
         ParkingSide ps = null;
         int timeBeforeRestriction = 0;
         for (Iterator<ParkingSide> i = getSides().iterator(); i.hasNext(); ) {
