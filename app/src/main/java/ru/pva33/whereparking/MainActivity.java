@@ -19,6 +19,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import ru.pva33.whereparking.db.DatabaseHelper;
 import ru.pva33.whereparking.db.ParkingPoint;
@@ -120,7 +121,9 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "Test button handler. ");
         // we have some trubles with import android library classes.
         // I try to set it in libs folder
-        Intent intent = new Intent(this, MapActivity.class);
+        Intent intent = new Intent(this, NotificationActivity.class);
+        Calendar calendar = new GregorianCalendar(2016, 2, 11, 20, 30);
+        intent.putExtra("notificationEndTime", calendar);
         startActivity(intent);
     }
 
@@ -141,7 +144,10 @@ public class MainActivity extends ActionBarActivity {
     private void showSide() {
         try {
             ParkingPoint pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
-            ParkingSide ps = pp.chooseParkingSide(Calendar.getInstance());
+            SolutionMaker chooser = new SolutionMaker(pp);
+//            ParkingSide ps = pp.chooseParkingSide(Calendar.getInstance());
+            ParkingSide ps = chooser.chooseParkingSide();
+
             String text = pp.getName() + ":" + ps.getName();
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
             TextView sideText = (TextView) findViewById(R.id.textViewParkingSide);

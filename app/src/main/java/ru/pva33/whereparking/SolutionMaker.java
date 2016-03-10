@@ -20,16 +20,15 @@ import ru.pva33.whereparking.db.ParkingSide;
  */
 public class SolutionMaker {
     private ParkingPoint parkingPoint;
+    private ParkingSide selectedParkingSide;
     private Calendar currentDate;
     private int supposedParkingDuration;
     private DatabaseHelper databaseHelper;
     private List<ParkingSide> parkingSides;
 
-    public SolutionMaker(ParkingPoint parkingPoint, Calendar currentDate,
-                         int supposedParkingDuration) {
+    public SolutionMaker(ParkingPoint parkingPoint) {
         this.parkingPoint = parkingPoint;
-        this.currentDate = currentDate;
-        this.supposedParkingDuration = supposedParkingDuration;
+        this.currentDate = Calendar.getInstance();
     }
 
     public Calendar getCurrentDate() {
@@ -62,5 +61,54 @@ public class SolutionMaker {
         Calendar parkingEnd = (Calendar) getCurrentDate().clone();
         parkingEnd.add(Calendar.HOUR, supposedParkingDuration);
 
+    }
+
+    /**
+     * Choose parking side and remember maximum time in hours before any its
+     * restriction starts. To see that time used {@link #getParkingDuration()}
+     * @return selected parking side
+     */
+    public ParkingSide chooseParkingSide(){
+        selectedParkingSide = this.parkingPoint.chooseParkingSide(this.currentDate);
+        supposedParkingDuration = selectedParkingSide.getHoursBefore(this.currentDate);
+        return selectedParkingSide;
+    }
+
+    /**
+     * Return maximum duration in hours of parking on selected parking side.
+     * If parking side is not selectes yet, it makes implicit coice for us.
+     * @return
+     */
+    public int getParkingDuration(){
+        if (selectedParkingSide == null) {
+            chooseParkingSide();
+        }
+        return supposedParkingDuration;
+    }
+
+    /**
+     * Return date-time when selected side becomes restrictid.
+     * Acuracy of time calculation is one hour.
+     * @return date-time
+     * @see #getParkingDuration()
+     */
+    public Calendar getEndTime(){
+        Calendar endTime = (Calendar) getCurrentDate().clone();
+        endTime.add(Calendar.HOUR, getParkingDuration());
+        return endTime;
+    }
+
+    /**
+     * return date-time for notification as time prior parking on selected side ended.
+     * @param minutes delta in minutes before end time of parking.
+     * @return date-time
+     * @see #getEndTime()
+     * @see #getParkingDuration()
+     * @see #chooseParkingSide()
+     */
+    public Calendar getNotificationTime(int minutes){
+        Calendar notificationTime = (Calendar) getCurrentDate().clone();
+        notificationTime.add(Calendar.MINUTE, -minutes);
+        return notificationTime;
     }
 }
