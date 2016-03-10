@@ -28,6 +28,9 @@ public class ParkingPoint implements Serializable, SoundKeeper {
     double longitude;     // east/west
     @DatabaseField
     String soundPath;
+    // added in version 2
+    @DatabaseField
+    boolean alert;
     @DatabaseField(generatedId = true, canBeNull = false)
     private Long _id;
     // eager true means that all sides would recieved with this object record_enable
@@ -40,6 +43,14 @@ public class ParkingPoint implements Serializable, SoundKeeper {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public boolean hasAlert() {
+        return alert;
+    }
+
+    public void setAlert(boolean alert) {
+        this.alert = alert;
     }
 
     public String getSoundPath() {
@@ -124,4 +135,5 @@ public class ParkingPoint implements Serializable, SoundKeeper {
         setLatitude(latLng.latitude);
         setLongitude(latLng.longitude);
     }
+
 }

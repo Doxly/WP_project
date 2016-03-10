@@ -19,7 +19,9 @@ import ru.pva33.whereparking.R;
  */
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "whereparking.db";
-    private static final int DATABASE_VERSION = 1;
+
+    // todo To upgrade mechanism works, don't forget incrise version number!!!
+    private static final int DATABASE_VERSION = 2;
 
     private static final String TAG = "PVA_DEBUG";
 
@@ -28,6 +30,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<ParkingRestriction, Integer> parkingRestrictionDao;
 
     public DatabaseHelper(Context context) {
+        // file ormlite_config used to avoid reflection usage at runtime and therefor increase performance
         super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
     }
 
@@ -97,6 +100,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
                           ConnectionSource connectionSource,
                           int oldVersion,
                           int newVersion) {
+        for (int upgradeTo = oldVersion + 1; upgradeTo <= newVersion; upgradeTo++) {
+            String sql = "alter table " + ParkingPoint.class.getSimpleName() +
+                " add column alert boolean";
+            database.execSQL(sql);
+        }
 
     }
 }
