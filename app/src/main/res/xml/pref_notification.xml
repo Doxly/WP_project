@@ -4,24 +4,68 @@
          when checked/unchecked. -->
     <CheckBoxPreference
         android:defaultValue="true"
-        android:key="notifications_new_message"
-        android:title="@string/pref_title_new_message_notifications"/>
+        android:key="@string/notifications_enabled"
+        android:title="@string/pref_title_notifications_enabled"/>
 
     <!-- Allows the user to choose a ringtone in the 'notification' category. -->
     <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
     <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
-    <RingtonePreference
-        android:defaultValue="content://settings/system/notification_sound"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_ringtone"
-        android:ringtoneType="notification"
-        android:title="@string/pref_title_ringtone"/>
+    <ListPreference
+        android:key="notification_1_time"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_1_time_title"
+        android:entries="@array/pref_frequency_titles"
+        android:entryValues="@array/pref_frequency_values"
+        android:defaultValue="180"
+        />
+    <ListPreference
+        android:key="notification_2_time"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_2_time_title"
+        android:text="@string/pref_notification_2_time_title"
+        android:entries="@array/pref_frequency_titles"
+        android:entryValues="@array/pref_frequency_values"
+        android:defaultValue="60"
+        />
+    <ListPreference
+        android:key="notification_3_time"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_3_time_title"
+        android:text="@string/pref_notification_3_time_title"
+        android:entries="@array/pref_frequency_titles"
+        android:entryValues="@array/pref_frequency_values"
+        android:defaultValue="-1"
+        />
+    <CheckBoxPreference
+        android:key="notification_repeat_untill_cancel"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_repeat_untill_cancel_title"
+        android:defaultValue="true"
+        />
+    <CheckBoxPreference
+        android:key="notification_play_sound"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_play_sound_title"
+        android:defaultValue="true"
+        />
+    <EditTextPreference
+        android:key="norification_text"
+        android:dependency="@string/notifications_enabled"
+        android:title="@string/pref_notification_text_title"
+        android:defaultValue="@string/pref_notification_text_default"
+        />
+    <!--<RingtonePreference-->
+        <!--android:defaultValue="content://settings/system/notification_sound"-->
+        <!--android:dependency="@string/notifications_enabled"-->
+        <!--android:key="notifications_new_message_ringtone"-->
+        <!--android:ringtoneType="notification"-->
+        <!--android:title="@string/pref_title_ringtone"/>-->
 
     <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:dependency="notifications_new_message"
-        android:key="notifications_new_message_vibrate"
-        android:title="@string/pref_title_vibrate"/>
+    <!--<CheckBoxPreference-->
+        <!--android:defaultValue="true"-->
+        <!--android:dependency="@string/notifications_enabled"-->
+        <!--android:key="notifications_new_message_vibrate"-->
+        <!--android:title="@string/pref_title_vibrate"/>-->
 
 </PreferenceScreen>

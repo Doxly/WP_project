@@ -56,9 +56,10 @@ public class SettingsActivity extends PreferenceActivity {
 
                 // Set the summary to reflect the new value.
                 preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
+                    index >= 0
+                        ? listPreference.getEntries()[index]
+                        : null
+                );
 
             } else if (preference instanceof RingtonePreference) {
                 // For ringtone preferences, look up the correct display value
@@ -69,7 +70,8 @@ public class SettingsActivity extends PreferenceActivity {
 
                 } else {
                     Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
+                        preference.getContext(), Uri.parse(stringValue)
+                    );
 
                     if (ringtone == null) {
                         // Clear the summary if there was a lookup error.
@@ -97,7 +99,7 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static boolean isXLargeTablet(Context context) {
         return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
+            & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     /**
@@ -109,8 +111,8 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static boolean isSimplePreferences(Context context) {
         return ALWAYS_SIMPLE_PREFS
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
-                || !isXLargeTablet(context);
+            || Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB
+            || !isXLargeTablet(context);
     }
 
     /**
@@ -129,12 +131,15 @@ public class SettingsActivity extends PreferenceActivity {
         // Trigger the listener immediately with the preference's
         // current value.
         sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                                                                 PreferenceManager
-                                                                         .getDefaultSharedPreferences(
-                                                                                 preference.getContext())
-                                                                         .getString(
-                                                                                 preference.getKey(),
-                                                                                 ""));
+            PreferenceManager
+                .getDefaultSharedPreferences(
+                    preference.getContext()
+                )
+                .getString(
+                    preference.getKey(),
+                    ""
+                )
+        );
     }
 
     @Override
@@ -165,9 +170,9 @@ public class SettingsActivity extends PreferenceActivity {
         // use the older PreferenceActivity APIs.
 
         getFragmentManager()
-                .beginTransaction()
-                .replace(android.R.id.content, new SimplePreferenceFragment())
-                .commit();
+            .beginTransaction()
+            .replace(android.R.id.content, new SimplePreferenceFragment())
+            .commit();
 /*        FragmentManager fm = getFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         Fragment newFragment = fm.findFragmentByTag(GENERAL_TAG);
@@ -228,7 +233,7 @@ public class SettingsActivity extends PreferenceActivity {
         // to reflect the new value, per the Android Design guidelines.
         bindPreferenceSummaryToValue(findPreference("example_text"));
         bindPreferenceSummaryToValue(findPreference("example_list"));
-        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+//        bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
         bindPreferenceSummaryToValue(findPreference("sync_frequency"));
 
         bindPreferenceSummaryToValue((findPreference("location_method")));
@@ -257,6 +262,9 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     public abstract static class PVAPreferenceFragment extends PreferenceFragment {
+        /**
+         * Link values in preferences controls and there summary text.
+         */
         public abstract void bindPreferences();
     }
 
@@ -282,9 +290,10 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void bindPreferences() {
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+//            bindPreferenceSummaryToValue(findPreference("example_text"));
+//            bindPreferenceSummaryToValue(findPreference("example_list"));
             bindPreferenceSummaryToValue(findPreference("location_method"));
+            bindPreferenceSummaryToValue(findPreference("fire_distance"));
         }
 
     }
@@ -310,7 +319,11 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public void bindPreferences() {
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+//            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+            bindPreferenceSummaryToValue(findPreference("notification_1_time"));
+            bindPreferenceSummaryToValue(findPreference("notification_2_time"));
+            bindPreferenceSummaryToValue(findPreference("notification_3_time"));
+            bindPreferenceSummaryToValue(findPreference("norification_text"));
         }
     }
 
@@ -359,22 +372,31 @@ public class SettingsActivity extends PreferenceActivity {
             fakeHeader.setTitle(R.string.pref_header_notifications);
             getPreferenceScreen().addPreference(fakeHeader);
             addPreferencesFromResource(R.xml.pref_notification);
-            fakeHeader = new PreferenceCategory(getActivity());
+            /*fakeHeader = new PreferenceCategory(getActivity());
             fakeHeader.setTitle(R.string.pref_header_data_sync);
             getPreferenceScreen().addPreference(fakeHeader);
-            addPreferencesFromResource(R.xml.pref_data_sync);
+            addPreferencesFromResource(R.xml.pref_data_sync);*/
             bindPreferences();
         }
 
+        /**
+         * Bind value of control and summary text, so when value is changed, the text of summary
+         * changed too. Summary text is text below title of setting.
+         */
         @Override
         public void bindPreferences() {
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            // to start working default values from xml. may be bug?
+//            PreferenceManager.setDefaultValues(this.getActivity(),R.xml.pref_general, false);
+            bindPreferenceSummaryToValue(findPreference("fire_distance"));
             bindPreferenceSummaryToValue(findPreference("location_method"));
             // from notification
-            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
+            bindPreferenceSummaryToValue(findPreference("notification_1_time"));
+            bindPreferenceSummaryToValue(findPreference("notification_2_time"));
+            bindPreferenceSummaryToValue(findPreference("notification_3_time"));
+            bindPreferenceSummaryToValue(findPreference("norification_text"));
+//            bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
             // from data_sync
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+//            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
         }
     }
 }

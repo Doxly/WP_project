@@ -35,6 +35,18 @@
 
     <string name="action_example">Example action</string>
 
+    <string-array name="pref_distance_titles">
+        <item>500м</item>
+        <item>1км</item>
+        <item>1.5км</item>
+        <item>2км</item>
+    </string-array>
+    <string-array name="pref_distance_values">
+        <item>500</item>
+        <item>1000</item>
+        <item>1500</item>
+        <item>2000</item>
+    </string-array>
     <!--<string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>-->
     <!--<string name="pref_title_with_sound">Звуковое оповещение</string>-->
 </resources>
