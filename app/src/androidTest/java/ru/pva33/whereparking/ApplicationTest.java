@@ -4,6 +4,8 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Calendar;
 
 import ru.pva33.whereparking.db.ParkingPoint;
@@ -130,6 +132,16 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         assertNotNull(result);
         Log.d(TAG, "testParkingPointChooseParkingSide. side=" + result.getName());
         assertEquals(ps, result);
+    }
 
+    public void testComputeDistance(){
+        LatLng p1, p2;
+        double distance;
+        p1 = new LatLng(53.187131, 50.149610); // work
+        p2 = new LatLng(53.204569, 50.160886); // home
+        // expect 2081.86 m
+        distance = ParkingHelper.computeDistanceBetween(p1, p2);
+        // form with three parameters: expected, real, delta
+        assertEquals(2081.86, distance, 1);
     }
 }

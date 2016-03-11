@@ -1,12 +1,16 @@
 package ru.pva33.whereparking;
 
 import android.content.Context;
+import android.location.Location;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 
 import ru.pva33.whereparking.db.ParkingPoint;
 import ru.pva33.whereparking.db.ParkingSide;
 import ru.pva33.whereparking.db.SoundKeeper;
+
 
 /**
  * Tool for some common operations.
@@ -70,5 +74,19 @@ public class ParkingHelper {
     public static boolean fileExists(String mFileName) {
         File file = new File(mFileName);
         return file.exists();
+    }
+
+    /**
+     * Compute distance between two points in meters.
+     * @param from coordinate 1
+     * @param to coordinate 2
+     * @return
+     */
+    public static double computeDistanceBetween(LatLng from, LatLng to){
+        double res;
+        float[] results = new float[1];
+        Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, results);
+        res = results[0];
+        return res;
     }
 }
