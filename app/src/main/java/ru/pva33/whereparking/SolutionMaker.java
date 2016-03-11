@@ -1,6 +1,14 @@
 package ru.pva33.whereparking;
 
+import android.content.Context;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.j256.ormlite.android.apptools.OpenHelperManager;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import ru.pva33.whereparking.db.DatabaseHelper;
@@ -19,15 +27,26 @@ import ru.pva33.whereparking.db.ParkingSide;
  * Created by pva on 28.01.16.
  */
 public class SolutionMaker {
-    private ParkingPoint parkingPoint;
+    private Context context;
+//    private ParkingPoint parkingPoint;
     private ParkingSide selectedParkingSide;
     private Calendar currentDate;
     private int supposedParkingDuration;
+
+    public DatabaseHelper getDatabaseHelper() {
+        if (databaseHelper == null) {
+            databaseHelper = OpenHelperManager.getHelper(context, DatabaseHelper.class);
+        }
+        return databaseHelper;
+    }
+
     private DatabaseHelper databaseHelper;
     private List<ParkingSide> parkingSides;
 
-    public SolutionMaker(ParkingPoint parkingPoint) {
-        this.parkingPoint = parkingPoint;
+//    public SolutionMaker(ParkingPoint parkingPoint) {
+    public SolutionMaker(Context context) {
+//        this.parkingPoint = parkingPoint;
+        this.context = context;
         this.currentDate = Calendar.getInstance();
     }
 
@@ -65,11 +84,11 @@ public class SolutionMaker {
 
     /**
      * Choose parking side and remember maximum time in hours before any its
-     * restriction starts. To see that time used {@link #getParkingDuration()}
+     * restriction starts. To see that time used {@link #getParkingDuration(ParkingPoint)}}
      * @return selected parking side
      */
-    public ParkingSide chooseParkingSide(){
-        selectedParkingSide = this.parkingPoint.chooseParkingSide(this.currentDate);
+    public ParkingSide chooseParkingSide(ParkingPoint pp){
+        selectedParkingSide = pp.chooseParkingSide(this.currentDate);
         supposedParkingDuration = selectedParkingSide.getHoursBefore(this.currentDate);
         return selectedParkingSide;
     }
@@ -79,9 +98,9 @@ public class SolutionMaker {
      * If parking side is not selectes yet, it makes implicit coice for us.
      * @return
      */
-    public int getParkingDuration(){
+    public int getParkingDuration(ParkingPoint pp){
         if (selectedParkingSide == null) {
-            chooseParkingSide();
+            chooseParkingSide(pp);
         }
         return supposedParkingDuration;
     }
@@ -90,11 +109,11 @@ public class SolutionMaker {
      * Return date-time when selected side becomes restrictid.
      * Acuracy of time calculation is one hour.
      * @return date-time
-     * @see #getParkingDuration()
+     * @see #getParkingDuration(ParkingPoint)
      */
-    public Calendar getEndTime(){
+    public Calendar getEndTime(ParkingPoint pp){
         Calendar endTime = (Calendar) getCurrentDate().clone();
-        endTime.add(Calendar.HOUR, getParkingDuration());
+        endTime.add(Calendar.HOUR, getParkingDuration(pp));
         return endTime;
     }
 
@@ -102,13 +121,37 @@ public class SolutionMaker {
      * return date-time for notification as time prior parking on selected side ended.
      * @param minutes delta in minutes before end time of parking.
      * @return date-time
-     * @see #getEndTime()
-     * @see #getParkingDuration()
-     * @see #chooseParkingSide()
+     * @see #getEndTime(ParkingPoint)
+     * @see #getParkingDuration(ParkingPoint)
+     * @see #chooseParkingSide(ParkingPoint)
      */
     public Calendar getNotificationTime(int minutes){
         Calendar notificationTime = (Calendar) getCurrentDate().clone();
         notificationTime.add(Calendar.MINUTE, -minutes);
         return notificationTime;
+    }
+
+    /**
+     * find all {@link ParkingPoint} in circle whith center in given point and
+     * radius given as distance.
+     * @param latLng center of search circle
+     * @param distance radius of search circle im meters
+     * @return
+     */
+    public List<ParkingPoint> findNearPP(LatLng latLng, double distance) throws SQLException {
+        List allPP = getDatabaseHelper().getParkingPontDao().queryForAll();
+        return findNearPP(latLng, distance, allPP);
+    }
+
+    public List<ParkingPoint> findNearPP(LatLng latLng, double distance, List allPP){
+        List resList = new ArrayList();
+        for (Iterator i = allPP.iterator(); i.hasNext() ;) {
+            ParkingPoint pp = (ParkingPoint) i.next();
+            double ppDist = ParkingHelper.computeDistanceBetween(latLng, pp.getPosition());
+            if (ppDist <= distance){
+                resList.add(pp);
+            }
+        }
+        return resList;
     }
 }

@@ -123,8 +123,18 @@ public class MainActivity extends ActionBarActivity {
         // I try to set it in libs folder
         Intent intent = new Intent(this, NotificationActivity.class);
         Calendar calendar = new GregorianCalendar(2016, 2, 11, 20, 30);
-        intent.putExtra("notificationEndTime", calendar);
-        startActivity(intent);
+        ParkingPoint pp = null;
+        try {
+            pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
+            SolutionMaker chooser = new SolutionMaker(this);
+            ParkingSide ps = chooser.chooseParkingSide(pp);
+            intent.putExtra("parkingSide", ps);
+            intent.putExtra("notificationEndTime", chooser.getEndTime(pp));
+            startActivity(intent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+//            ParkingSide ps = pp.chooseParkingSide(Calendar.getInstance());
     }
 
 //    public String getSoundFileName(int parkingPointId, int parkingSideId) {
@@ -144,9 +154,9 @@ public class MainActivity extends ActionBarActivity {
     private void showSide() {
         try {
             ParkingPoint pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
-            SolutionMaker chooser = new SolutionMaker(pp);
+            SolutionMaker chooser = new SolutionMaker(this);
 //            ParkingSide ps = pp.chooseParkingSide(Calendar.getInstance());
-            ParkingSide ps = chooser.chooseParkingSide();
+            ParkingSide ps = chooser.chooseParkingSide(pp);
 
             String text = pp.getName() + ":" + ps.getName();
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();

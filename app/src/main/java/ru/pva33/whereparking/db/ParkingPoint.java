@@ -38,6 +38,10 @@ public class ParkingPoint implements Serializable, SoundKeeper {
     private Collection<ParkingSide> sides;
     public ParkingPoint() {
     }
+
+    public ParkingPoint(String name, LatLng latLng){
+        this(name, latLng.latitude, latLng.longitude);
+    }
     public ParkingPoint(String name, double latitude, double longitude) {
         super();
         this.name = name;

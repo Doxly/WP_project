@@ -6,7 +6,9 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import ru.pva33.whereparking.db.ParkingPoint;
 import ru.pva33.whereparking.db.ParkingRestriction;
@@ -143,5 +145,27 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         distance = ParkingHelper.computeDistanceBetween(p1, p2);
         // form with three parameters: expected, real, delta
         assertEquals(2081.86, distance, 1);
+    }
+
+    public void testFindNearPP(){
+        LatLng center = new LatLng(50, 50);
+        LatLng near = new LatLng(50.00001, 50);
+        LatLng far = new LatLng(33,33);
+        double dist = 3000; // in meters
+        List ppList = new ArrayList();
+        SolutionMaker solutionMaker = new SolutionMaker(null);
+
+        ppList.add(new ParkingPoint("pp1", near));
+        List resList = solutionMaker.findNearPP(center, dist, ppList);
+        assertEquals(1, resList.size());
+
+        ppList.add(new ParkingPoint("pp2", far));
+        resList = solutionMaker.findNearPP(center,dist, ppList);
+        assertEquals(1, resList.size());
+
+        ppList.add(new ParkingPoint("pp3", near));
+        resList = solutionMaker.findNearPP(center, dist, ppList);
+        assertEquals(2, resList.size());
+
     }
 }
