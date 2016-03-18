@@ -36,12 +36,14 @@ public class ParkingPoint implements Serializable, SoundKeeper {
     // eager true means that all sides would recieved with this object record_enable
     @ForeignCollectionField(eager = true)
     private Collection<ParkingSide> sides;
+
     public ParkingPoint() {
     }
 
-    public ParkingPoint(String name, LatLng latLng){
+    public ParkingPoint(String name, LatLng latLng) {
         this(name, latLng.latitude, latLng.longitude);
     }
+
     public ParkingPoint(String name, double latitude, double longitude) {
         super();
         this.name = name;
@@ -103,20 +105,21 @@ public class ParkingPoint implements Serializable, SoundKeeper {
     /**
      * Select side where there is no active restrictions right now and which have
      * maximum time before restriction.
-     * @param calendar
+     *
+     * @param now
      * @return
      */
-    public ParkingSide chooseParkingSide(Calendar calendar) {
+    public ParkingSide chooseParkingSide(Calendar now) {
         //
 
         ParkingSide ps = null;
-        int timeBeforeRestriction = 0;
+        long timeBeforeRestriction = 0;
         for (Iterator<ParkingSide> i = getSides().iterator(); i.hasNext(); ) {
             ParkingSide loopSide = i.next();
-            if (loopSide.isRetricted(calendar)) {
+            if (loopSide.isRetricted(now)) {
                 continue;
             }
-            int sideTime = loopSide.getHoursBefore(calendar);
+            long sideTime = loopSide.getTimeBefore(now);
             if (sideTime > timeBeforeRestriction) {
                 ps = loopSide;
                 timeBeforeRestriction = sideTime;

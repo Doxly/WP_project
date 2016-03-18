@@ -29,7 +29,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
         int hour = now.get(Calendar.HOUR_OF_DAY);
         ParkingRestriction pr = new ParkingRestriction(null, dayOfWeek, hour, hour + 1);
-        Log.d(TAG, "is active test pr=" + pr);
+//        Log.d(TAG, "is active test pr=" + pr);
         assertTrue(pr.isActive(now));
         pr = new ParkingRestriction(null, dayOfWeek, hour + 1, hour + 2);
         assertFalse(pr.isActive(now));
@@ -89,22 +89,40 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
         int hour = now.get(Calendar.HOUR_OF_DAY);
-
-        Log.d(TAG, "DayOfWeek=" + dayOfWeek + " hour=" + hour);
-
+//        Log.d(TAG, "DayOfWeek=" + dayOfWeek + " hour=" + hour);
         ParkingSide ps = new ParkingSide(null, "test parking side");
+        long maxTime;
+
+        // tomorrow at the same time
         ParkingRestriction pr = new ParkingRestriction(null, dayOfWeek + 1, hour, hour + 1);
         ps.getRestrictions().add(pr);
-        int maxTime = ps.getHoursBefore(now);
-        assertEquals(24, maxTime);
 
-        pr = new ParkingRestriction(null, dayOfWeek, hour + 5, hour + 6);
-        ps.getRestrictions().add(pr);
-        maxTime = ps.getHoursBefore(now);
-        assertEquals(5, maxTime);
+        // time in milliseconds
+        maxTime = ps.getTimeBefore(now);
+        assertEquals(24 - 1, maxTime/60/60/1000);
+
+        // tooday 5 hours later
+        ps.getRestrictions().add(new ParkingRestriction(null, dayOfWeek, hour + 5, hour + 6));
+        maxTime = ps.getTimeBefore(now);
+        assertEquals(5 - 1, maxTime/60/60/1000);
+    }
+
+    public void testParkingRestrictionGetNextDate(){
+        Calendar now = Calendar.getInstance();
+        // set to 01.01.2016 00:00:00 that is friday
+        now.set(2016, 1,1,0,0,0);
+        ParkingRestriction pr = new ParkingRestriction(null, Calendar.THURSDAY, 3, 6);
+        Calendar next = pr.getNextDate(now);
+        Log.d(TAG, String.format("parking restriction next date for thursday=%s", next));
+        assertEquals(Calendar.THURSDAY, next.get(Calendar.DAY_OF_WEEK));
+//        Log.d(TAG, String.format("next hour of day=%s, hour=%s", next.get(Calendar.HOUR_OF_DAY), next.get(Calendar.HOUR)));
+        assertEquals(3, next.get(Calendar.HOUR_OF_DAY));
+        assertEquals(0, next.get(Calendar.MINUTE));
+        assertTrue(next.after(now));
     }
 
     public void testParkingPointChooseParkingSide() {
+        /* Choose side with MAXIMUN time before any of its restriction becomes active*/
         Calendar now = Calendar.getInstance();
         int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
         int hour = now.get(Calendar.HOUR_OF_DAY);
@@ -113,14 +131,15 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         // single side
         ParkingSide ps = new ParkingSide(pp, "first side");
         pp.getSides().add(ps);
-        ParkingRestriction pr = new ParkingRestriction(ps, dayOfWeek, hour + 1, hour + 2);
-        ps.getRestrictions().add(pr);
+        // Tooday, 1 hour later
+        ps.getRestrictions().add(new ParkingRestriction(ps, dayOfWeek, hour + 1, hour + 2));
         ParkingSide result = pp.chooseParkingSide(now);
         assertEquals(ps, result);
 
         // second side with active restriction
         ps = new ParkingSide(pp, "wrong side");
         pp.getSides().add(ps);
+        // right now
         ps.getRestrictions().add(new ParkingRestriction(ps, dayOfWeek, hour, hour + 1));
         result = pp.chooseParkingSide(now);
         assertNotNull(result);
@@ -129,11 +148,12 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         // third /yes why no?/ that is most suitable for parking
         ps = new ParkingSide(pp, "third side");
         pp.getSides().add(ps);
+        // tomorrow at the same time
         ps.getRestrictions().add(new ParkingRestriction(ps, dayOfWeek + 1, hour, hour + 1));
         result = pp.chooseParkingSide(now);
         assertNotNull(result);
-        Log.d(TAG, "testParkingPointChooseParkingSide. side=" + result.getName());
-        assertEquals(ps, result);
+//        Log.d(TAG, "testParkingPointChooseParkingSide. side=" + result.getName());
+        assertEquals("third side", result.getName());
     }
 
     public void testComputeDistance(){
@@ -156,15 +176,15 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         SolutionMaker solutionMaker = new SolutionMaker(null);
 
         ppList.add(new ParkingPoint("pp1", near));
-        List resList = solutionMaker.findNearPP(center, dist, ppList);
+        List resList = solutionMaker.findAllNearPP(center, dist, ppList);
         assertEquals(1, resList.size());
 
         ppList.add(new ParkingPoint("pp2", far));
-        resList = solutionMaker.findNearPP(center,dist, ppList);
+        resList = solutionMaker.findAllNearPP(center, dist, ppList);
         assertEquals(1, resList.size());
 
         ppList.add(new ParkingPoint("pp3", near));
-        resList = solutionMaker.findNearPP(center, dist, ppList);
+        resList = solutionMaker.findAllNearPP(center, dist, ppList);
         assertEquals(2, resList.size());
 
     }

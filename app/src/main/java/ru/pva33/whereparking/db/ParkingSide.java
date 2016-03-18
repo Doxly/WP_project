@@ -1,5 +1,7 @@
 package ru.pva33.whereparking.db;
 
+import android.util.Log;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -32,6 +34,8 @@ public class ParkingSide implements Serializable, SoundKeeper {
     @ForeignCollectionField(eager = true)
     private Collection<ParkingRestriction> restrictions;
 
+    public static final long INFINITY_PERIOD = 1000*60*60*24*365;
+
     public ParkingSide(ParkingPoint parkingPoint, String name) {
         super();
         this.parkingPoint = parkingPoint;
@@ -45,7 +49,7 @@ public class ParkingSide implements Serializable, SoundKeeper {
     public Collection<ParkingRestriction> getRestrictions() {
         // Не знаю насколько корректно здесь инициализировать это поле. Мне нужно для тестирования.
         if (restrictions == null) {
-            restrictions = new ArrayList<ParkingRestriction>();
+            restrictions = new ArrayList<>();
         }
         return restrictions;
     }
@@ -81,14 +85,14 @@ public class ParkingSide implements Serializable, SoundKeeper {
     /**
      * is any side restriction active for given date-time
      *
-     * @param calendar
+     * @param now
      * @return
      */
-    public boolean isRetricted(Calendar calendar) {
+    public boolean isRetricted(Calendar now) {
         boolean result = false;
         for (Iterator<ParkingRestriction> i = getRestrictions().iterator(); i.hasNext(); ) {
             ParkingRestriction pr = i.next();
-            result = pr.isActive(calendar);
+            result = pr.isActive(now);
             if (result) {
                 break;
             }
@@ -97,21 +101,38 @@ public class ParkingSide implements Serializable, SoundKeeper {
     }
 
     /**
-     * Get minimum time in hours before any restriction becomes active
-     * @param calendar
+     * Get minimum time in milliseconds before any restriction becomes active
+     *
+     * @param now
      * @return
      */
-    public int getHoursBefore(Calendar calendar) {
-        int result = 99999;
-        // find restriction with smallest time before
-        for (Iterator<ParkingRestriction> i = getRestrictions().iterator(); i.hasNext(); ) {
-            int hb = i.next().getHoursBefore(calendar);
-            result = result > hb ? hb : result;
+    public long getTimeBefore(Calendar now) {
+        long result;
+        Calendar nextDate = getNextDateRestriction(now);
+        if (nextDate == null) {
+            return INFINITY_PERIOD;
         }
+        if (now == null) {
+            Log.e(TAG, "now is null");
+            return 0;
+        }
+        result = nextDate.getTimeInMillis() - now.getTimeInMillis();
         return result;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Calendar getNextDateRestriction(Calendar now) {
+        Calendar result = null;
+        // find restriction with smallest date
+        for (Iterator<ParkingRestriction> i = getRestrictions().iterator(); i.hasNext(); ) {
+            Calendar rDate = i.next().getNextDate(now);
+            if (result == null || result.after(rDate)) {
+                result = rDate;
+            }
+        }
+        return result;
     }
 }

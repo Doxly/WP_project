@@ -47,6 +47,8 @@
         <item>1500</item>
         <item>2000</item>
     </string-array>
+    <string name="title_activity_notification">NotificationActivity</string>
+    <string name="period_format_mask">dd дней, HH часов, mm минут</string>
     <!--<string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>-->
     <!--<string name="pref_title_with_sound">Звуковое оповещение</string>-->
 </resources>

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import ru.pva33.whereparking.db.DatabaseHelper;
 import ru.pva33.whereparking.db.ParkingPoint;
@@ -125,8 +126,11 @@ public class MainActivity extends ActionBarActivity {
         Calendar calendar = new GregorianCalendar(2016, 2, 11, 20, 30);
         ParkingPoint pp = null;
         try {
-            pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
+//            pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
+            List ppList = this.getDatabaseHelper().getParkingPontDao().queryForAll();
             SolutionMaker chooser = new SolutionMaker(this);
+//            pp = chooser.findNearestPP(new LatLng(53.1855033, 50.1589985), 1500, ppList);
+            pp = (ParkingPoint) ppList.get(0);
             ParkingSide ps = chooser.chooseParkingSide(pp);
             intent.putExtra("parkingSide", ps);
             intent.putExtra("notificationEndTime", chooser.getEndTime(pp));
