@@ -84,10 +84,15 @@ public class PPDetailActivity extends ActionBarActivity {
         setListeners(listView);
 
         dataChanged = false;
-        if (getIntent() != null && getIntent().getExtras() != null
-            && getIntent().getExtras().get("parkingPoint") != null) {
+        if (savedInstanceState == null) {
             this.pp = (ParkingPoint) getIntent().getExtras().get("parkingPoint");
+        }else{
+            this.pp = (ParkingPoint) savedInstanceState.getSerializable("parkingPoint");
         }
+//        if (getIntent() != null && getIntent().getExtras() != null
+//            && getIntent().getExtras().get("parkingPoint") != null) {
+//            this.pp = (ParkingPoint) getIntent().getExtras().get("parkingPoint");
+//        }
 //        Log.d(TAG, "PPdetail onCreate. pp="+this.pp);
         showData(this.pp);
         recordPanel = makeRecordPanel();
@@ -305,5 +310,9 @@ public class PPDetailActivity extends ActionBarActivity {
         return currentParkingSide;
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("parkingPoint", this.pp);
+    }
 }
