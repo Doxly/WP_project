@@ -73,8 +73,10 @@ public class SolutionMaker {
      */
     public ParkingSide chooseParkingSide(ParkingPoint pp) {
         selectedParkingSide = pp.chooseParkingSide(getCurrentDate());
-        supposedParkingDuration = selectedParkingSide.getTimeBefore(getCurrentDate());
-        endTime = selectedParkingSide.getNextDateRestriction(getCurrentDate());
+        if (selectedParkingSide != null) {
+            supposedParkingDuration = selectedParkingSide.getTimeBefore(getCurrentDate());
+            endTime = selectedParkingSide.getNextDateRestriction(getCurrentDate());
+        }
         return selectedParkingSide;
     }
 

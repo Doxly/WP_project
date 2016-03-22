@@ -200,6 +200,7 @@ public class PPDetailActivity extends ActionBarActivity {
         switch (requestCode) {
             case ParkingHelper.EDIT_PP:
 //                Log.d(TAG, "result code = " + resultCode);
+                // TODO Need to check resultCode
                 if (data != null && data.getExtras() != null) {
                     ParkingPoint newPP = (ParkingPoint) data.getExtras().get("parkingPoint");
                     try {
@@ -211,6 +212,18 @@ public class PPDetailActivity extends ActionBarActivity {
                         e.printStackTrace();
                     }
 //                    Log.d(TAG, "OnActivityResult recieve new parking point:" + newPP);
+                }
+                break;
+            case ParkingHelper.EDIT_PS:
+                if(resultCode == RESULT_OK && data != null && data.getExtras() != null){
+                    ParkingSide newPS = (ParkingSide) data.getExtras().getSerializable(PSEditActivity.DATA_KEY);
+                    try {
+                        getDatabaseHelper().getParkingSideDao().update(newPS);
+                        adapter.update(newPS);
+                        this.dataChanged = true;
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
         }
@@ -265,6 +278,9 @@ public class PPDetailActivity extends ActionBarActivity {
      */
     private void editPS(ParkingSide parkingSide) {
         Log.d(TAG, "would edit parking side");
+        Intent intent = new Intent(this, PSEditActivity.class);
+        intent.putExtra("parkingSide", parkingSide);
+        startActivityForResult(intent, ParkingHelper.EDIT_PS);
     }
 
 

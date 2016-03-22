@@ -254,12 +254,9 @@ public class PPListActivity extends ActionBarActivity {
                     boolean dataChanged = data.getBooleanExtra("dataChanged", false);
                     if (dataChanged) {
                         ParkingPoint pp = (ParkingPoint) data.getExtras().get("parkingPoint");
-//                        Log.d(TAG, "pp from show=" + pp);
-//                        Log.e(TAG, "pp from show=" + pp);
                         try {
-                            getDatabaseHelper().getParkingPontDao().update(pp);
+                            getDatabaseHelper().getParkingPontDao().refresh(pp);
                             adapter.update(pp);
-                            Log.d(TAG, "List onresult after detail db ");
                         } catch (SQLException e) {
                             Log.e(TAG, e.getMessage());
                             e.printStackTrace();

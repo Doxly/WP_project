@@ -95,6 +95,10 @@
             android:name=".NotificationActivity"
             android:label="@string/title_activity_notification" >
         </activity>
+        <activity
+            android:name=".PSEditActivity"
+            android:label="@string/title_activity_psedit" >
+        </activity>
     </application>
 
 </manifest>

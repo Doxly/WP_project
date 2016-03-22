@@ -23,6 +23,7 @@ import ru.pva33.whereparking.db.ParkingPoint;
 public class PPEditActivity extends Activity implements View.OnClickListener {
 
     private static final String TAG = "PVA_DEBUG";
+    public static final String DATA_KEY = "parkingPoint";
     private ParkingPoint pp;
 
     private EditText edName, edLongitude, edLatitude;
@@ -39,14 +40,14 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
         edName = (EditText) findViewById(R.id.edName);
         edLongitude = (EditText) findViewById(R.id.edLongitude);
         edLatitude = (EditText) findViewById(R.id.edLatitude);
-        tvSoundPath = (TextView) findViewById(R.id.edSoundPath);
+        tvSoundPath = (TextView) findViewById(R.id.tvSoundPath);
         bSound = (ImageButton) findViewById(R.id.bSound);
         bMap = (ImageButton) findViewById(R.id.bMap);
         bSave = (Button) findViewById(R.id.bSave);
         if (savedInstanceState == null) {
-            this.pp = (ParkingPoint) getIntent().getExtras().get("parkingPoint");
+            this.pp = (ParkingPoint) getIntent().getExtras().get(DATA_KEY);
         } else {
-            this.pp = (ParkingPoint) savedInstanceState.getSerializable("parkingPoint");
+            this.pp = (ParkingPoint) savedInstanceState.getSerializable(DATA_KEY);
         }
         showData(this.pp);
     }
@@ -60,11 +61,15 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("parkingPoint", pp);
+        outState.putSerializable(DATA_KEY, pp);
     }
 
 
     private void showData(ParkingPoint pp) {
+        if (pp == null) {
+            Log.e(TAG, "PPEditActivity.showData pp is null.");
+            return;
+        }
         edName.setText(pp.getName());
         tvSoundPath.setText(pp.getSoundPath());
         edLongitude.setText(String.valueOf(pp.getLongitude()));
@@ -115,7 +120,7 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
                 pp.setLatitude(getDoubleFromED(edLatitude));
             }
             Intent intent = new Intent();
-            intent.putExtra("parkingPoint", this.pp);
+            intent.putExtra(DATA_KEY, pp);
             setResult(RESULT_OK, intent);
             finish();
         } else if (v == bSound) {

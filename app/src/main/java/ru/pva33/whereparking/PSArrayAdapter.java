@@ -45,9 +45,37 @@ public class PSArrayAdapter extends ArrayAdapter<ParkingSide> {
         ImageButton sb = ((ImageButton) convertView.findViewById(R.id.ppListItemSoundButton));
         // if we don't do this in code element of list wouldn't fired click events
         sb.setFocusable(false);
-        int imageId = ps.getSoundPath() == null ? R.drawable.ic_lock_silent_mode : R.drawable.ic_lock_silent_mode_off;
+        int imageId = ps.getSoundPath() == null || ps.getSoundPath().isEmpty() ? R.drawable.ic_lock_silent_mode : R.drawable.ic_lock_silent_mode_off;
         sb.setBackgroundResource(imageId);
 
         return convertView;
+    }
+
+    /**
+     * Find {@link ParkingSide} in inner list by its id,
+     * and replace it if found or create new if not found.
+     * @param ps
+     */
+    public void update(ParkingSide ps){
+        if (ps == null) {
+            return;
+        }
+        int oldID = findPS(ps.get_id());
+        if (oldID >= 0){
+            records.set(oldID, ps);
+        }else{
+            records.add(ps);
+        }
+        notifyDataSetChanged();
+    }
+
+    private int findPS(Long id) {
+        for (int i = this.records.size(); i > 0 ; i--) {
+            ParkingSide ps = (ParkingSide) this.records.get(i - 1);
+            if(ps.get_id().equals(id)){
+                return i-1;
+            }
+        }
+        return -1;
     }
 }

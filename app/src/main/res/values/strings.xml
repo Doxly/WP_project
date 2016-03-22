@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Where parking</string>
-    <string name="Lable1">Настройки</string>
+    <string name="Label1">Настройки</string>
     <string name="title_activity_main">Где запарковаться</string>
 
     <string name="hello_world">Hellow world</string>
@@ -14,13 +14,13 @@
     <string name="action_edit">Редактировать</string>
     <string name="action_delete">Удалить</string>
     <string name="title_activity_ppdetail">Место парковки</string>
-    <string name="coordinatsLable">Координаты</string>
+    <string name="coordinatsLabel">Координаты</string>
     <string name="altutude">Широта</string>
     <string name="longitude">Долгота</string>
     <string name="PPDetailSides">Стороны парковки</string>
     <string name="pref_fire_distance">Дистанция срабатывания</string>
     <string name="pref_fire_distance_description">Дистанция в км, при приближении ближе которой к точке парковки сработает определение стороны.</string>
-    <string name="ppNameLable">Название</string>
+    <string name="ppNameLabel">Название</string>
     <string name="action_add_side">Добавить сторону</string>
     <string name="title_activity_ppedit">Редактирование места парковки</string>
     <string name="bSave">Сохранить</string>
@@ -49,6 +49,13 @@
     </string-array>
     <string name="title_activity_notification">NotificationActivity</string>
     <string name="period_format_mask">dd дней, HH часов, mm минут</string>
+    <string name="title_activity_psedit">Редактирование стороны парковки</string>
+    <string name="psLabelName">Название</string>
+    <string name="labelLongitude">Долгота</string>
+    <string name="labelLatitude">Широта</string>
+    <string name="labelCoordinates">Координаты</string>
+    <string name="labelMessage">Текст сообщения</string>
+    <string name="labelPPName">Точка парковки</string>
     <!--<string name="pref_description_with_sound">Проигрывать звуковой файл, если он задан.</string>-->
     <!--<string name="pref_title_with_sound">Звуковое оповещение</string>-->
 </resources>

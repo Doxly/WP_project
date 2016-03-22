@@ -3,7 +3,7 @@ package ru.pva33.whereparking;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -12,6 +12,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -30,8 +33,12 @@ import ru.pva33.whereparking.db.ParkingPoint;
  * <p/>
  * data extras is always ppList
  */
-public class MapActivity extends ActionBarActivity
-    implements GoogleMap.OnMarkerDragListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+//public class MapActivity extends ActionBarActivity // ActionBarActivity is depricated
+public class MapActivity extends AppCompatActivity
+    implements GoogleMap.OnMarkerDragListener,
+    GoogleApiClient.ConnectionCallbacks,
+    GoogleApiClient.OnConnectionFailedListener,
+    OnMapReadyCallback {
     public final static String DATA_KEY = "ppList";
     private final static int MODE_NO_PP = 0;
     private final static int MODE_SINGL_PP = 1;
@@ -53,19 +60,36 @@ public class MapActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        // getMap is depricated becouse map may be null in some cases.
+//        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMapAsync(this);
         googleApiClient = new GoogleApiClient.Builder(this).
             addConnectionCallbacks(this).
             addOnConnectionFailedListener(this).
             addApi(LocationServices.API).
             build();
         googleApiClient.connect();
-        processExtra();
-        showMarkers();
-        moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION);
     }
 
-    private void moveCamera(LatLng ll, float zoom, int duration) {
+    /**
+     * Handler for implementation OnMapReadyCallback interface.
+     *
+     * @param map
+     */
+    public void onMapReady(GoogleMap map) {
+        this.map = map;
+        processExtra();
+        showMarkers(map);
+        UiSettings mapUiSettings = map.getUiSettings();
+        mapUiSettings.setZoomControlsEnabled(true);
+        mapUiSettings.setMyLocationButtonEnabled(true);
+//        mapUiSettings.setMapToolbarEnabled(true);
+
+        moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION, map);
+
+    }
+
+    private void moveCamera(LatLng ll, float zoom, int duration, GoogleMap map) {
         Log.d(MainActivity.TAG, "1 move camera ll=" + ll);
         if (ll == null) {
             ll = this.latLng;
@@ -87,7 +111,7 @@ public class MapActivity extends ActionBarActivity
         return latLng;
     }
 
-    private void showMarkers() {
+    private void showMarkers(GoogleMap map) {
         if (mode != MODE_NO_PP) {
             if (markerMap == null) {
                 markerMap = new HashMap<>();
@@ -105,6 +129,10 @@ public class MapActivity extends ActionBarActivity
         }
     }
 
+    /**
+     * process any data passed outside by intent extras.
+     * Waits {@link #DATA_KEY} keyed data
+     */
     private void processExtra() {
         Intent intent = getIntent();
         if (intent == null) {
@@ -125,6 +153,11 @@ public class MapActivity extends ActionBarActivity
         }
     }
 
+    /**
+     * Create new {@link MarkerOptions} for given {@link ParkingPoint} and position it.
+     * @param pp Parking point to show with marker
+     * @return
+     */
     private MarkerOptions setMarker(ParkingPoint pp) {
         MarkerOptions result = null;
         if (pp != null) {
@@ -156,6 +189,12 @@ public class MapActivity extends ActionBarActivity
         setPositionFromMarker(marker);
     }
 
+    /**
+     * Find {@link ParkingPoint}, linked with marker.
+     * Extract position from marker, and set it to parking point.
+     * Set entier list of {@link ParkingPoint} as action result.
+     * @param marker Map marker, which has been dragged
+     */
     private void setPositionFromMarker(Marker marker) {
         // find marker in hashmap
         // get parkingPointId from hashmap
@@ -173,15 +212,22 @@ public class MapActivity extends ActionBarActivity
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "onConnected fired. latLng=" + latLng);
         location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        if (location == null) {
+            return;
+        }
         Log.d(TAG, "onConnected. new location=" + location);
         if (latLng == null || (latLng.latitude == 0 && latLng.longitude == 0)) {
             latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION);
+            moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION, map);
             // There is marker with zero coordinates and such pp
             moveZeroMarkers(latLng);
         }
     }
 
+    /**
+     *
+     * @param latLng
+     */
     private void moveZeroMarkers(LatLng latLng) {
         Iterator<Marker> markers = markerMap.keySet().iterator();
         while (markers.hasNext()) {
@@ -191,6 +237,15 @@ public class MapActivity extends ActionBarActivity
                 setPositionFromMarker(marker);
             }
         }
+        // show circle for current position
+        map.addCircle(new CircleOptions().
+                center(latLng).
+//                radius(location.getAccuracy()).
+                radius(500).
+                strokeWidth(2).
+                strokeColor(0).
+                fillColor(111)
+        );
     }
 
     @Override

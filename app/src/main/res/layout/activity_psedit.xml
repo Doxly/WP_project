@@ -2,45 +2,39 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/background"
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
                 android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="ru.pva33.whereparking.PPEditActivity"
-    >
+                android:background="@drawable/background"
+                tools:context="ru.pva33.whereparking.PSEditActivity">
 
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:text="@string/title_activity_ppedit"
-        android:textSize="@dimen/abc_dialog_padding_material"
+        android:text="@string/title_activity_psedit"
+        android:textSize="24dp"
         android:textStyle="bold|italic"
         />
-
     <TextView
         android:id="@+id/labelName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/psLabelName"
         android:layout_alignBottom="@+id/edName"
-        android:text="@string/ppNameLabel"
         />
-
     <EditText
         android:id="@+id/edName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="false"
         android:layout_below="@+id/tvTitle"
-        android:layout_toLeftOf="@+id/bSound"
         android:layout_toRightOf="@+id/labelName"
+        android:layout_toLeftOf="@+id/bSound"
         android:inputType="text"
         />
-
     <ImageButton
         android:id="@+id/bSound"
         android:layout_width="wrap_content"
@@ -64,7 +58,6 @@
         android:text="Звук"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
-
     <TextView
         android:id="@+id/tvSoundPath"
         android:layout_width="wrap_content"
@@ -77,85 +70,67 @@
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:paddingLeft="12px"
         />
-
     <TextView
-        android:id="@+id/labelCoordinates"
+        android:id="@+id/labelMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/edMessage"
+        android:text="@string/labelMessage"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        />
+
+    <EditText
+        android:id="@+id/edMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/bSound"
-        android:text="@string/labelCoordinates"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toRightOf="@+id/labelMessage"
+        android:inputType="text"
+        android:layout_alignRight="@+id/bSound"
+        android:layout_alignEnd="@+id/bSound"
         />
-
     <TextView
-        android:id="@+id/labelLongitude"
+        android:id="@+id/labelPPName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/edLongitude"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:text="@string/labelLongitude"
+        android:layout_below="@+id/edMessage"
+        android:paddingTop="20px"
+        android:text="@string/labelPPName"
         android:textAppearance="?android:attr/textAppearanceSmall"
         />
-
     <TextView
-        android:id="@+id/labelLatitude"
+        android:id="@+id/PPName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/edLatitude"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:text="@string/labelLatitude"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_toRightOf="@+id/labelPPName"
+        android:layout_alignBottom="@+id/labelPPName"
+        android:text=". . ."
+        android:paddingLeft="12px"
         />
 
-    <EditText
-        android:id="@+id/edLongitude"
-        android:layout_width="wrap_content"
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/edName"
-        android:layout_alignRight="@+id/edName"
-        android:layout_below="@+id/labelCoordinates"
-        android:layout_toRightOf="@+id/labelLongitude"
-        android:ems="10"
-        android:inputType="numberDecimal|numberSigned"
+        android:clickable="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:longClickable="true"
+        android:layout_below="@+id/PPName"
+        android:layout_above="@+id/bSave"
         />
 
-    <EditText
-        android:id="@+id/edLatitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/edName"
-        android:layout_alignLeft="@+id/edLongitude"
-        android:layout_alignRight="@+id/edName"
-        android:layout_alignStart="@+id/edLongitude"
-        android:layout_below="@+id/edLongitude"
-        android:ems="10"
-        android:inputType="numberDecimal|numberSigned"
-        />
-
-    <ImageButton
-        android:id="@+id/bMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/labelCoordinates"
-        android:background="@drawable/map"
-        android:onClick="onClick"
-        />
 
     <Button
         android:id="@+id/bSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/labelLatitude"
-        android:layout_toEndOf="@+id/labelName"
-        android:layout_toRightOf="@+id/labelName"
+        android:layout_alignParentBottom="true"
         android:onClick="onClick"
         android:text="@string/bSave"
         />
-
 </RelativeLayout>

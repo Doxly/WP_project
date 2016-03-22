@@ -29,6 +29,11 @@ public class ParkingSide implements Serializable, SoundKeeper {
     private Long _id;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false)
     private ParkingPoint parkingPoint;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @DatabaseField(canBeNull = false)
     private String name;
     @ForeignCollectionField(eager = true)

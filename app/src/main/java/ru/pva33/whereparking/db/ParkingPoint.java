@@ -34,7 +34,7 @@ public class ParkingPoint implements Serializable, SoundKeeper {
     @DatabaseField(generatedId = true, canBeNull = false)
     private Long _id;
     // eager true means that all sides would recieved with this object record_enable
-    @ForeignCollectionField(eager = true)
+    @ForeignCollectionField(eager = true, maxEagerLevel = 3, maxEagerForeignCollectionLevel = 3)
     private Collection<ParkingSide> sides;
 
     public ParkingPoint() {
