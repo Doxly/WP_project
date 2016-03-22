@@ -93,6 +93,16 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
         return super.onOptionsItemSelected(item);
     }
 
+    private Double getDoubleFromED(EditText control){
+        String text = control.getText().toString();
+        Double res;
+        if(text.isEmpty()){
+            text = "0";
+        }
+        res = new Double(text);
+        return res;
+    }
+
     @Override
     public void onClick(View v) {
         // return modifyed parking point
@@ -101,8 +111,8 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
             if (pp != null) {
                 pp.setName(edName.getText().toString());
                 pp.setSoundPath(tvSoundPath.getText().toString());
-                pp.setLongitude(new Double(edLongitude.getText().toString()));
-                pp.setLatitude(new Double(edLatitude.getText().toString()));
+                pp.setLongitude(getDoubleFromED(edLongitude));
+                pp.setLatitude(getDoubleFromED(edLatitude));
             }
             Intent intent = new Intent();
             intent.putExtra("parkingPoint", this.pp);
