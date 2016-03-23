@@ -27,7 +27,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="66dp"
-        android:onClick="click"
+        android:onClick="onClick"
         android:text="Test"
         />
 

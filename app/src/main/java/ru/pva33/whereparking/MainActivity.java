@@ -18,8 +18,6 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import ru.pva33.whereparking.db.DatabaseHelper;
@@ -118,13 +116,12 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void click(View view) {
+    public void onClick(View view) {
         Log.d(TAG, "Test button handler. ");
         // we have some trubles with import android library classes.
         // I try to set it in libs folder
         Intent intent = new Intent(this, NotificationActivity.class);
-        Calendar calendar = new GregorianCalendar(2016, 2, 11, 20, 30);
-        ParkingPoint pp = null;
+        ParkingPoint pp;
         try {
 //            pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
             List ppList = this.getDatabaseHelper().getParkingPontDao().queryForAll();

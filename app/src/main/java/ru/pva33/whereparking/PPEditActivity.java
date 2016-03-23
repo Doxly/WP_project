@@ -22,8 +22,8 @@ import ru.pva33.whereparking.db.ParkingPoint;
 //public class PPEditActivity extends ActionBarActivity implements View.OnClickListener {
 public class PPEditActivity extends Activity implements View.OnClickListener {
 
-    private static final String TAG = "PVA_DEBUG";
     public static final String DATA_KEY = "parkingPoint";
+    private static final String TAG = "PVA_DEBUG";
     private ParkingPoint pp;
 
     private EditText edName, edLongitude, edLatitude;
@@ -125,7 +125,7 @@ public class PPEditActivity extends Activity implements View.OnClickListener {
             finish();
         } else if (v == bSound) {
             Intent intent = new Intent(this, SoundRecorderActivity.class);
-            Log.e(TAG, "Sound button click. pp.getSoundPath()='" + pp.getSoundPath() + "'");
+            Log.e(TAG, "Sound button onClick. pp.getSoundPath()='" + pp.getSoundPath() + "'");
             String fileName = pp.getSoundPath();
             if (fileName == null || fileName.isEmpty()) {
                 fileName = ParkingHelper.getSoundFileName(this, pp);

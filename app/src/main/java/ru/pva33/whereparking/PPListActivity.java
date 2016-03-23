@@ -78,7 +78,7 @@ public class PPListActivity extends ActionBarActivity {
                 Context.LAYOUT_INFLATER_SERVICE
             );
             final View rowView = inflater.inflate(R.layout.pp_list_item, listView, false);
-            // attach listeners to view. click show detail information. Long click show popup menu with list of operations
+            // attach listeners to view. onClick show detail information. Long onClick show popup menu with list of operations
             setListeners(listView);
             // set adapter
             adapter = new PPArrayAdapter(this, R.layout.pp_list_item, parkingPointList);

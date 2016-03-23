@@ -42,7 +42,7 @@ public class PPArrayAdapter extends ArrayAdapter<ParkingPoint> {
         ((TextView) convertView.findViewById(R.id.ppListItemName)).setText(pp.getName());
         // icon of sound attachment
         ImageButton sb = ((ImageButton) convertView.findViewById(R.id.ppListItemSoundButton));
-        // if we don't do this in code element of list wouldn't fired click events
+        // if we don't do this in code element of list wouldn't fired onClick events
         sb.setFocusable(false);
         int imageId = pp.getSoundPath() == null || pp.getSoundPath().isEmpty() ?
             R.drawable.ic_lock_silent_mode : R.drawable.ic_lock_silent_mode_off;

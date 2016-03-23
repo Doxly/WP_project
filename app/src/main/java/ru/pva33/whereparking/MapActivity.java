@@ -28,7 +28,7 @@ import ru.pva33.whereparking.db.ParkingPoint;
 
 /**
  * Map can be opened in some different modes:
- * - view/edot single parking point. If parking point has not coordinates click would set it.
+ * - view/edit single parking point. If parking point has not coordinates onClick would set it.
  * - view several parking points with possibility to choose parking point and show it's details.
  * <p/>
  * data extras is always ppList
