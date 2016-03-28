@@ -3,8 +3,10 @@
 /.idea/workspace.xml
 /.idea/libraries
 /.idea/misc.xml
+/.idea/gradle.xml
+/.idea/vcs.xml
 .DS_Store
 /build
 /captures
 #/app/src/main/res/drawable/silk
-*.iml
+#*.iml
