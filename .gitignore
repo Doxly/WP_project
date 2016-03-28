@@ -5,6 +5,12 @@
 #/.idea/misc.xml
 /.idea/gradle.xml
 /.idea/vcs.xml
+/.idea/codeStyleSettings.xml
+/.idea/dictionaries/pva.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/.name
+/.idea/modules.xml
 .DS_Store
 /build
 /captures
