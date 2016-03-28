@@ -3,17 +3,24 @@ package ru.pva33.whereparking;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -21,7 +28,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import ru.pva33.whereparking.db.ParkingPoint;
@@ -38,11 +44,15 @@ public class MapActivity extends AppCompatActivity
     implements GoogleMap.OnMarkerDragListener,
     GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener,
+    LocationListener,
+    GoogleMap.OnMapClickListener,
     OnMapReadyCallback {
     public final static String DATA_KEY = "ppList";
     private final static int MODE_NO_PP = 0;
     private final static int MODE_SINGL_PP = 1;
     private final static int MODE_MANY_PP = 2;
+    private static final long TIMER_PERIOD = 60 * 1000L;
+    private static final long TIMER_IF_EXISTS = 10 * 1000L;
     private static String TAG = "PVA_DEBUG";
     private GoogleApiClient googleApiClient;
     private int mode = MODE_NO_PP;
@@ -51,7 +61,7 @@ public class MapActivity extends AppCompatActivity
     // point where map would centered
     private LatLng latLng = null;
     private GoogleMap map;
-    private Location location;
+    private Circle myLocationCircle;
 
     private int MAP_ANIMATION_DURATION = 2000;
     private float MAP_ZOOM = 15;
@@ -66,6 +76,7 @@ public class MapActivity extends AppCompatActivity
         googleApiClient = new GoogleApiClient.Builder(this).
             addConnectionCallbacks(this).
             addOnConnectionFailedListener(this).
+
             addApi(LocationServices.API).
             build();
         googleApiClient.connect();
@@ -74,30 +85,33 @@ public class MapActivity extends AppCompatActivity
     /**
      * Handler for implementation OnMapReadyCallback interface.
      *
-     * @param map
+     * @param map The map thats ready
      */
     public void onMapReady(GoogleMap map) {
         this.map = map;
         processExtra();
         showMarkers(map);
+        map.setOnMapClickListener(this);
+        map.setTrafficEnabled(true);
+//        map.setMyLocationEnabled(true);
         UiSettings mapUiSettings = map.getUiSettings();
         mapUiSettings.setZoomControlsEnabled(true);
-        mapUiSettings.setMyLocationButtonEnabled(true);
+//        mapUiSettings.setMyLocationButtonEnabled(true);
 //        mapUiSettings.setMapToolbarEnabled(true);
 
-        moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION, map);
+        moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION);
 
     }
 
-    private void moveCamera(LatLng ll, float zoom, int duration, GoogleMap map) {
-        Log.d(MainActivity.TAG, "1 move camera ll=" + ll);
+    private void moveCamera(LatLng ll, float zoom, int duration) {
+//        Log.d(MainActivity.TAG, "1 move camera ll=" + ll);
         if (ll == null) {
             ll = this.latLng;
             if (ll == null) {
                 ll = getCurrentLocation();
             }
         }
-        Log.e(MainActivity.TAG, "2 move camera ll=" + ll);
+//        Log.e(MainActivity.TAG, "2 move camera ll=" + ll);
         // zoom in the camera to Davao city
         // if no latlng pass there would exception fired need to get current location
         if (ll != null) {
@@ -156,7 +170,7 @@ public class MapActivity extends AppCompatActivity
     /**
      * Create new {@link MarkerOptions} for given {@link ParkingPoint} and position it.
      * @param pp Parking point to show with marker
-     * @return
+     * @return new created {@link MarkerOptions}
      */
     private MarkerOptions setMarker(ParkingPoint pp) {
         MarkerOptions result = null;
@@ -210,42 +224,88 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.d(TAG, "onConnected fired. latLng=" + latLng);
-        location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        Log.e(TAG, "onConnected fired. latLng=" + latLng);
+        Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (location == null) {
             return;
         }
         Log.d(TAG, "onConnected. new location=" + location);
         if (latLng == null || (latLng.latitude == 0 && latLng.longitude == 0)) {
             latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION, map);
+            moveCamera(latLng, MAP_ZOOM, MAP_ANIMATION_DURATION);
             // There is marker with zero coordinates and such pp
             moveZeroMarkers(latLng);
         }
+        showCurrentPosition(location);
+
+        // try to subscribe to location change events
+//        Location currentLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(TIMER_PERIOD);
+        locationRequest.setFastestInterval(TIMER_IF_EXISTS);
+        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(locationRequest);
+        PendingResult<LocationSettingsResult> result =
+            LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest,
+            this
+        );
+        onLocationChanged(location);
     }
 
     /**
-     *
-     * @param latLng
+     * For all markers with empty (zero) latitude and longitude, set given position.
+     * Also change position of {@link ParkingPoint}, linked with that marker.
+     * @param latLng position
      */
     private void moveZeroMarkers(LatLng latLng) {
-        Iterator<Marker> markers = markerMap.keySet().iterator();
-        while (markers.hasNext()) {
-            Marker marker = markers.next();
+        for (Marker marker : markerMap.keySet()) {
             if (marker.getPosition().latitude == 0 && marker.getPosition().longitude == 0) {
                 marker.setPosition(latLng);
                 setPositionFromMarker(marker);
             }
         }
-        // show circle for current position
-        map.addCircle(new CircleOptions().
-                center(latLng).
-//                radius(location.getAccuracy()).
-                radius(500).
-                strokeWidth(2).
-                strokeColor(0).
-                fillColor(111)
-        );
+    }
+
+    /**
+     * Show given location as circle whith center in location and radius equal location acuracy.
+     * @see #showCurrentPosition(LatLng, double)
+     * @param location some geolocation to show
+     */
+    private void showCurrentPosition(Location location){
+        showCurrentPosition(new LatLng(location.getLatitude(), location.getLongitude()), location.getAccuracy());
+    }
+
+    /**
+     * Draw circle with center in given position and given radius.
+     * Fill circle with transparent blue color.
+     * When first call move camera to given location.
+     * @param position location
+     * @param radius circle radius im meters.
+     */
+    private void showCurrentPosition(LatLng position, double radius){
+        Log.e(TAG, String.format("ShowCurrentPosition called. position=%s \n radius=%s",
+                position, radius));
+        if (position == null) {
+            Log.e(TAG, "MapActivity.showCurrentPosition position is null.");
+        }
+        if (myLocationCircle == null)
+        {
+
+            CircleOptions circleOptions = new CircleOptions()
+                .center(position)
+                .radius(radius)
+                .strokeWidth(5)
+//                .strokeColor(0x10000000)
+                .strokeColor(0x100000FF)
+                .fillColor(0x110000FF)
+                ;
+            myLocationCircle = map.addCircle(circleOptions);
+            moveCamera(position, MAP_ZOOM, MAP_ANIMATION_DURATION);
+        }
+        myLocationCircle.setCenter(position);
+        myLocationCircle.setRadius(radius);
     }
 
     @Override
@@ -254,13 +314,25 @@ public class MapActivity extends AppCompatActivity
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
     @Override
     protected void onDestroy() {
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         googleApiClient.disconnect();
         super.onDestroy();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(TAG, String.format("onLocationChanged fired. location=%s", location));
+        showCurrentPosition(location);
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        Log.e(TAG, String.format("map clicker latlng=%s", latLng));
     }
 }

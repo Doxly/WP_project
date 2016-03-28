@@ -258,7 +258,6 @@ public class PvaParkingService extends Service
     }
 
     /**
-     * Would be called periodically when location changed.
      *
      * @param locationRequest
      */
@@ -278,6 +277,10 @@ public class PvaParkingService extends Service
 
     }
 
+    /**
+     * Would be called periodically when location changed.
+     * @param location
+     */
     @Override
     public void onLocationChanged(Location location) {
         Log.d(TAG, "onLocationChanged fired. new location="+location);

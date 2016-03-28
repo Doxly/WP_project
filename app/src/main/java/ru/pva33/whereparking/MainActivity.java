@@ -18,6 +18,7 @@ import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.pva33.whereparking.db.DatabaseHelper;
@@ -120,17 +121,17 @@ public class MainActivity extends ActionBarActivity {
         Log.d(TAG, "Test button handler. ");
         // we have some trubles with import android library classes.
         // I try to set it in libs folder
-        Intent intent = new Intent(this, NotificationActivity.class);
+        Intent intent = new Intent(this, MapActivity.class);
         ParkingPoint pp;
         try {
 //            pp = this.getDatabaseHelper().getParkingPontDao().queryForAll().get(0);
-            List ppList = this.getDatabaseHelper().getParkingPontDao().queryForAll();
+            List<ParkingPoint> ppList = this.getDatabaseHelper().getParkingPontDao().queryForAll();
             SolutionMaker chooser = new SolutionMaker(this);
 //            pp = chooser.findNearestPP(new LatLng(53.1855033, 50.1589985), 1500, ppList);
-            pp = (ParkingPoint) ppList.get(0);
-            ParkingSide ps = chooser.chooseParkingSide(pp);
-            intent.putExtra("parkingSide", ps);
-            intent.putExtra("notificationEndTime", chooser.getEndTime(pp));
+//            pp = (ParkingPoint) ppList.get(0);
+//            ParkingSide ps = chooser.chooseParkingSide(pp);
+            intent.putExtra(MapActivity.DATA_KEY, new ArrayList<>(ppList));
+//            intent.putExtra("notificationEndTime", chooser.getEndTime(pp));
             startActivity(intent);
         } catch (SQLException e) {
             e.printStackTrace();
