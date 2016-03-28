@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -159,14 +158,18 @@ public class MainActivity extends ActionBarActivity {
 //            ParkingSide ps = pp.chooseParkingSide(Calendar.getInstance());
             ParkingSide ps = chooser.chooseParkingSide(pp);
 
-            String text = pp.getName() + ":" + ps.getName();
+            Intent intent = new Intent(this, NotificationActivity.class);
+            intent.putExtra("parkingSide", ps);
+            intent.putExtra("notificationEndTime", chooser.getEndTime(pp));
+            startActivity(intent);
+/*            String text = pp.getName() + ":" + ps.getName();
             Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG).show();
             TextView sideText = (TextView) findViewById(R.id.textViewParkingSide);
             sideText.setText(text);
             if (isWithSound()) {
                 String path = ParkingHelper.getSoundFileName(this, 1L, 1L);
                 playSound(path);
-            }
+            }*/
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -48,11 +48,11 @@ public class NotificationActivity extends AppCompatActivity {
                 return;
             }
             currentParkingPoint = currentParkingSide.getParkingPoint();
-            period = extras.getLong("peroid", ParkingSide.INFINITY_PERIOD);
-//            Calendar now = Calendar.getInstance();
+//            period = extras.getLong("peroid", ParkingSide.INFINITY_PERIOD);
+            Calendar now = Calendar.getInstance();
 //            Log.d(TAG, "Notification onCreate. notificationEndTime="+endTime);
 //            Log.d(TAG, "Notification onCreate. endTime.getTime="+endTime.getTime());
-//            period = endTime.getTimeInMillis() - now.getTimeInMillis();
+            period = endTime.getTimeInMillis() - now.getTimeInMillis();
             Log.d(TAG, "Notification onCreate. period=" + formatPeriod(period));
 
 
@@ -77,26 +77,26 @@ public class NotificationActivity extends AppCompatActivity {
         MediaPlayer mPlayer = new MediaPlayer();
         try {
             if (ppSoundFileName != null && !ppSoundFileName.isEmpty()) {
-
                 mPlayer.setDataSource(ppSoundFileName);
                 mPlayer.prepare();
                 mPlayer.start();
-                mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                                    @Override
-                                                    public void onCompletion(MediaPlayer mp) {
-                                                        try {
-                                                            if (psSoundFileName != null && psSoundFileName.isEmpty()) {
+                mPlayer.setOnCompletionListener(
+                    new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mp) {
+                            try {
+                                if (psSoundFileName != null && psSoundFileName.isEmpty()) {
 
-                                                                mp.setDataSource(psSoundFileName);
-                                                                mp.prepare();
-                                                                mp.start();
-                                                            }
-                                                            mp.setOnCompletionListener(null);
-                                                        } catch (IOException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    }
-                                                }
+                                    mp.setDataSource(psSoundFileName);
+                                    mp.prepare();
+                                    mp.start();
+                                }
+                                mp.setOnCompletionListener(null);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 );
             }
         } catch (IOException e) {
